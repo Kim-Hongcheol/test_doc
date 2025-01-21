@@ -39,7 +39,14 @@ html_theme_options = {
     
 }
 html_scaled_image_link = False
-autodoc_mock_imports = ["rclpy"]
+autodoc_mock_imports = [
+    "rclpy",
+    "std_msgs",
+    "sensor_msgs",
+    "trajectory_msgs",
+    "control_msgs",
+    # 필요 시 추가
+]
 # 프로젝트 설정 파일 (conf.py)
 
 # 로고 설정
