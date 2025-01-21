@@ -85,14 +85,17 @@ The driver communicates via the following topics:
 
 - `/gripper/grasp_mode` (`std_msgs/Int32`): Grasp mode commands:
   
-  - `0`: Open
+  - `0`: Release.
   
-  - `1`: 3F Close
+  - `1`: 3F Grasp.
   
-  - `2`: 2F Close
+  - `2~4`: 2F Grasp.
   
-  - `3`: Parallel Close.
+  - `5`: Parallel Grasp.
+ 
+  - `6`: Envelope Grasp.
 
+more topic details can be found in the `delto_3f_driver` package.
 
 Controllers
 -----------
