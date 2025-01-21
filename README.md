@@ -121,14 +121,10 @@ ros2 launch delto_description dg2f_display.launch.py
 ```
 
 ```bash
-ros2 launch delto_description dg2f_display.launch.py
-```
-
-```bash
 ros2 launch delto_3f_driver delto_3f_bringup.launch.py delto_ip:=192.168.0.100 delto_port:=502
 ```
 
 ## Feature Requests and Bug Reports
 
-If you have any feature requests, modification suggestions, or encounter any bugs, please create an issue on GitHub or contact the maintainer at khc@tesollo.com.
+If you have any feature requests, modification suggestions, or encounter any bugs, please create an issue on GitHub or contact the maintainer at support@tesollo.com.
 
