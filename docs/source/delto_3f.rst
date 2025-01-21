@@ -1,11 +1,11 @@
-Delto 3F Gripper
+Delto Gripper-3F
 =================
 
-This section contains details about the Delto 3F Gripper.
+This section contains details about the Delto Gripper-3F.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Delto 3F Gripper Contents
+   :caption: Delto Gripper-3F Contents
 
    delto_3f_introduce
    delto_3f_driver

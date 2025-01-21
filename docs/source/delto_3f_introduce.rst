@@ -1,5 +1,5 @@
 ================
-Delto 3F Gripper
+Delto Gripper-3F 
 ================
 
 
@@ -10,7 +10,7 @@ Introduction
    :width: 600px
    :align: center
 
-The Delto 3F gripper is an advanced three-fingered robotic gripper designed for versatile manipulation tasks. With its anthropomorphic design and sophisticated control system, it provides exceptional dexterity and precision in grasping various objects.
+The Delto Gripper-3F is an advanced three-fingered robotic gripper designed for versatile manipulation tasks. With its anthropomorphic design and sophisticated control system, it provides exceptional dexterity and precision in grasping various objects.
 
 Features
 --------
@@ -65,7 +65,7 @@ The gripper can be controlled through:
 Applications
 ---------------------------------------
 
-The Delto 3F gripper is suitable for:
+The Delto Gripper-3F is suitable for:
 
 - Research and Development
     * Robot manipulation studies

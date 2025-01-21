@@ -1,11 +1,11 @@
-Delto 3F ROS2 Driver
+Delto Gripper-3F ROS2 Driver
 ====================
 
-This package provides a ROS2 driver for the DELTO 3F Gripper, allowing for integration with robotic systems using ROS2.
+This package provides a ROS2 driver for the Delto Gripper-3F, allowing for integration with robotic systems using ROS2.
 
 Key Features
 ------------
-- Supports DELTO 3F Gripper control via ROS2 topics, services, and actions.
+- Supports Delto Gripper-3F control via ROS2 topics, services, and actions.
 
 - Includes ROS2 control integration with hardware interface and controllers.
 
@@ -17,7 +17,7 @@ Prerequisites
 -------------
 - ROS2 (humble)
 
-- DELTO 3F Gripper hardware
+- Delto Gripper-3F hardware
 
 - Python dependencies:
   
@@ -46,9 +46,9 @@ To launch the driver and connect to the gripper, use the following commands:
 
 **Optional Parameters:**
 
-- `delto_ip`: IP address of the DELTO 3F Gripper (default: `169.254.186.72`)
+- `delto_ip`: IP address of the gripper (default: `169.254.186.72`)
 
-- `delto_port`: Port for DELTO 3F Gripper communication (default: `502`)
+- `delto_port`: Port for the gripper communication (default: `502`)
 
 - `delto_id`: Modbus slave ID for the gripper (default: `1`)
 
@@ -58,7 +58,7 @@ To launch the driver and connect to the gripper, use the following commands:
 
 ROS2 Control Integration
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-To launch the DELTO 3F driver with ROS2 Control integration:
+To launch the Delto Gripper-3F driver with ROS2 Control integration:
 
 .. code-block:: bash
 
@@ -66,9 +66,9 @@ To launch the DELTO 3F driver with ROS2 Control integration:
 
 **Optional Parameters:**
 
-- `delto_ip`: IP address of the DELTO 3F Gripper (default: `169.254.186.72`)
+- `delto_ip`: IP address of the Gripper (default: `169.254.186.72`)
 
-- `delto_port`: Port for DELTO 3F Gripper communication (default: `502`)
+- `delto_port`: Port for Gripper communication (default: `502`)
 
 
 Topics
@@ -99,7 +99,7 @@ more topic details can be found in the `delto_3f_driver` package.
 
 Controllers
 -----------
-The DELTO 3F ROS2 driver uses the following controllers:
+The Delto Gripper-3F ROS2 driver uses the following controllers:
 
 - `joint_state_broadcaster`: Broadcasts joint states for visualization and monitoring.
 
@@ -133,7 +133,7 @@ Set grasp mode:
 
 Customization
 -------------
-You can customize the behavior of the DELTO 3F driver using the launch file parameters:
+You can customize the behavior of the Delto Gripper-3F driver using the launch file parameters:
 
 **Bringup Parameters (`delto_3f_bringup.launch.py`):**
 

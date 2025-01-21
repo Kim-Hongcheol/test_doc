@@ -1,4 +1,4 @@
-Delto 2F Gripper
+Delto Gripper-2F
 =================
 
 This section contains details about the Delto 2F Gripper.

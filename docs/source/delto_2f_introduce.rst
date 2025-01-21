@@ -1,4 +1,4 @@
-Delto 2F Gripper
+Delto Gripper-2F
 ================================
 
 .. figure:: /resource/dg2f.png

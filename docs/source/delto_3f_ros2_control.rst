@@ -1,12 +1,12 @@
-Delto 3F Gripper ROS2 Control Configuration
+Delto Gripper-3F ROS2 Control Configuration
 ===========================================
 
-We are excited to announce that the **Delto 3F Gripper** supports **ros2_control**! Below is an example configuration for integrating the gripper with a ROS 2 system using the `joint_trajectory_controller` and `joint_state_broadcaster`.
+We are excited to announce that the **Delto Gripper-3F** supports **ros2_control**! Below is an example configuration for integrating the gripper with a ROS 2 system using the `joint_trajectory_controller` and `joint_state_broadcaster`.
 
 Controller and Broadcaster Configuration
 -----------------------------------------
 
-Below is the YAML configuration for the **Delto 3F Gripper** in a `ros2_control` framework:
+Below is the YAML configuration for the **Delto Gripper-3F** in a `ros2_control` framework:
 
 .. code-block:: yaml
 

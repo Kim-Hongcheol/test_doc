@@ -1,11 +1,11 @@
-Delto 2F ROS2 Driver
+Delto Gripper-2F ROS2 Driver
 ====================
 
-This package provides a ROS2 driver for the DELTO 2F Gripper, enabling integration with robotic systems using ROS2.
+This package provides a ROS2 driver for the Delto Gripper-2F, enabling integration with robotic systems using ROS2.
 
 Key Features
 ------------
-- ROS2 topics and services for controlling the DELTO 2F Gripper.
+- ROS2 topics and services for controlling the Delto Gripper-2F.
 - Joint state feedback for real-time monitoring.
 - Customizable gripper operation modes.
 
@@ -24,7 +24,7 @@ Usage
 
 Launching the Driver
 ~~~~~~~~~~~~~~~~~~~~
-To launch the DELTO 2F driver and connect to the gripper, use the following command:
+To launch the Delto Gripper-2F driver and connect to the gripper, use the following command:
 
 .. code-block:: bash
 
@@ -32,7 +32,7 @@ To launch the DELTO 2F driver and connect to the gripper, use the following comm
 
 **Optional Parameters:**
 
-- `ip`: IP address of the DELTO 2F Gripper (default: `169.254.186.72`)
+- `ip`: IP address of the gripper (default: `169.254.186.72`)
 - `port`: Communication port for the gripper (default: `502`)
 - `slaveID`: Modbus slave ID for the gripper (default: `1`)
 

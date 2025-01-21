@@ -1,4 +1,4 @@
-Delto 5F Gripper
+Delto Gripper-5F 
 =================
 
 Stay tuned for updates as we work to add support for the Delto 5F Driver.  

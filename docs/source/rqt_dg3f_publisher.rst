@@ -123,7 +123,7 @@ Build Instructions
 
     # Clone the repository to your ROS 2 workspace
     cd ~/ros2_ws/src
-    git clone <repository_url>
+    git clone https://github.com/Tesollo-Delto/rqt_dg3f_publisher_gui
 
     # Build the package
     cd ~/ros2_ws
