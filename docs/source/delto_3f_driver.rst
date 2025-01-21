@@ -127,7 +127,7 @@ Set grasp mode:
    from std_msgs.msg import Int32
 
    grasp_cmd = Int32()
-   grasp_cmd.data = 1  # 0: Open, 1: 3F Close, 2: 2F Close, 3: Parallel Close
+   grasp_cmd.data = 1  # 1: 3F Grasp.
 
    # Publish the message to 'gripper/grasp_mode'
 
@@ -147,11 +147,6 @@ You can customize the behavior of the DELTO 3F driver using the launch file para
 
 - `fake_mode`: Enable fake mode for testing.
 
-**ROS2 Control Parameters (`delto_3f_ros2_control.launch.py`):**
-
-- `p_gain`: Proportional gain for control.
-
-- `d_gain`: Derivative gain for control.
 
 Contributing
 ------------
