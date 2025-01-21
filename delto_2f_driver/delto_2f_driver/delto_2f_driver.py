@@ -14,13 +14,6 @@ Example:
     .. code-block:: bash
 
         ros2 run delto_2f_driver delto_2f_driver
-
-Note:
-    - This module requires Python 3.x or later.
-    - Sphinx autodoc can parse these docstrings to generate HTML or other formats.
-    - If you use a virtual environment, ensure that the environment is activated
-      before running or installing dependencies.
-
 """
 
 import math
