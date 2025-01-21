@@ -114,6 +114,3 @@ For more information:
 
 * `User Manual <https://en.tesollo.com/DG-3F>`_
 * API Documentation (Coming soon)
-
-Contact Information
-------------------------------
