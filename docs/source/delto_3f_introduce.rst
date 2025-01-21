@@ -117,12 +117,3 @@ For more information:
 
 Contact Information
 ------------------------------
-
-For technical support and inquiries:
-
-:Email: support@tesollo.com
-:Website: https://www.en.tesollo.com/
-
-.. note::
-   This documentation is maintained by Tesollo.
-   Last updated: January 2025
