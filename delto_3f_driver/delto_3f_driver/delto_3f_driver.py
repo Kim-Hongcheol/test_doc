@@ -10,14 +10,21 @@ with the actual hardware via Modbus TCP and offers various messages and actions
 to control and monitor the gripper.
 
 Key features:
+
 - Read the current joint angles of the gripper
+
 - Set target joint angles
+
 - Save/load gripper poses to/from internal memory
+
 - Execute a grasp command and switch between different grasp modes
+
 - Update and retrieve P/D gains
+
 - Provide a FollowJointTrajectory action server
 
 Example:
+
     Below is a basic example of how to run this node via the ``main()`` function:
 
     .. code-block:: console
