@@ -48,7 +48,7 @@ To launch the driver and connect to the gripper, use the following commands:
 
 - `delto_ip`: IP address of the DELTO 3F Gripper (default: `169.254.186.72`)
 
-- `delto_port`: Port for DELTO 3F Gripper communication (default: `10000`)
+- `delto_port`: Port for DELTO 3F Gripper communication (default: `502`)
 
 - `delto_id`: Modbus slave ID for the gripper (default: `1`)
 
@@ -62,7 +62,7 @@ To launch the DELTO 3F driver with ROS2 Control integration:
 
 .. code-block:: bash
 
-   ros2 launch delto_3f_driver delto_3f_ros2_control.launch.py delto_ip:=192.168.0.112 delto_port:=502 p_gain:=0.1 d_gain:=0.2
+   ros2 launch delto_3f_driver delto_3f_ros2_control.launch.py delto_ip:=192.168.0.112 delto_port:=502 
 
 **Optional Parameters:**
 
@@ -70,9 +70,6 @@ To launch the DELTO 3F driver with ROS2 Control integration:
 
 - `delto_port`: Port for DELTO 3F Gripper communication (default: `502`)
 
-- `p_gain`: Proportional gain for the gripper controller (default: `0.1`)
-
-- `d_gain`: Derivative gain for the gripper controller (default: `0.2`)
 
 Topics
 ------
@@ -95,6 +92,7 @@ The driver communicates via the following topics:
   - `2`: 2F Close
   
   - `3`: Parallel Close.
+
 
 Controllers
 -----------

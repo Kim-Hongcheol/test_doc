@@ -32,9 +32,9 @@ To launch the DELTO 2F driver and connect to the gripper, use the following comm
 
 **Optional Parameters:**
 
-- `ip`: IP address of the DELTO 2F Gripper (default: `192.254.186.62`)
-- `port`: Communication port for the gripper (default: `10000`)
-- `slaveID`: Modbus slave ID for the gripper (default: `0`)
+- `ip`: IP address of the DELTO 2F Gripper (default: `169.254.186.72`)
+- `port`: Communication port for the gripper (default: `502`)
+- `slaveID`: Modbus slave ID for the gripper (default: `1`)
 
 Topics
 ------
