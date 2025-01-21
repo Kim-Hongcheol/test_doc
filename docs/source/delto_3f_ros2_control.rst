@@ -77,11 +77,17 @@ Below is the YAML configuration for the **Delto 3F Gripper** in a `ros2_control`
 
 Explanation
 ------------
+
 - **`update_rate`**: Sets the rate at which joint states are published (500 Hz for high-frequency updates).
+
 - **Gains**: Proportional (P), Integral (I), and Derivative (D) values for precise control of each joint.
+
 - **`allow_partial_joints_goal`**: Allows for setting goals for a subset of joints.
+
 - **Interfaces**:
+
   - **Command Interfaces**: Effort-based input.
+
   - **State Interfaces**: Position and velocity.
 
 How to Use
