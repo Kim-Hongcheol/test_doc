@@ -50,6 +50,8 @@ autodoc_mock_imports = [
     "math",
     "crcmod.predefined",
     "pymodbus",
+    "ros_gz_interfaces",
+    "delto_utility",
     # 필요 시 추가
 ]
 # 프로젝트 설정 파일 (conf.py)
