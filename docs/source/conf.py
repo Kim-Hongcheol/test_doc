@@ -45,6 +45,11 @@ autodoc_mock_imports = [
     "sensor_msgs",
     "trajectory_msgs",
     "control_msgs",
+    "socket",
+    "numpy",
+    "math",
+    "crcmod.predefined",
+    "pymodbus",
     # 필요 시 추가
 ]
 # 프로젝트 설정 파일 (conf.py)
