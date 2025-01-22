@@ -35,25 +35,14 @@ jobs:
       # ============================
       # 심/하드링크 제거 단계 시작
       # ============================
-      - name: Convert symlinks and hardlinks to normal files
+      - name: Convert symlinks/hardlinks to normal files (using rsync)
         run: |
-          echo "Converting symlinks/hardlinks in docs/build/html to normal files..."
-
-          # 1) 변환용 임시 디렉터리 생성
+          sudo apt-get update && sudo apt-get install -y rsync
           mkdir -p docs/build/cleaned_html
-
-          # 2) rsync를 사용해 모든 파일을 따라가며(-L) 복사
-          #    -L 옵션: 심볼릭 링크 대상 파일을 따라가서 복사
-          #    --copy-links 와 유사
-          #    inode가 달라지므로 하드 링크도 끊김
           rsync -a -L docs/build/html/ docs/build/cleaned_html/
-
-          # 3) 기존 html 폴더 제거 후, cleaned_html을 html로 교체
           rm -rf docs/build/html
           mv docs/build/cleaned_html docs/build/html
 
-          echo "All symlinks/hardlinks converted. Listing final output..."
-          ls -R docs/build/html
 
       # ============================
       # 심/하드링크 제거 단계 끝
