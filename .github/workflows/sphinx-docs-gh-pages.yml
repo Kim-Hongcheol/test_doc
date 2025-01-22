@@ -1,4 +1,4 @@
-name: Build and Deploy Sphinx Docs (No Symlinks/Hardlinks, Check Size)
+name: Build and Deploy Sphinx Docs (Enhanced)
 
 on:
   push:
@@ -17,7 +17,7 @@ jobs:
 
     steps:
       # -------------------------
-      # 1) Checkout Repository & Set Up Python
+      # 1. Checkout Repository & Set Up Python
       # -------------------------
       - name: Checkout code
         uses: actions/checkout@v3
@@ -33,54 +33,49 @@ jobs:
           pip install -r docs/requirements.txt
 
       # -------------------------
-      # 2) Build Sphinx Documentation
+      # 2. Build Sphinx Documentation
       # -------------------------
       - name: Build Sphinx documentation
         run: |
           sphinx-build -b html docs/source docs/build/html
 
       # -------------------------
-      # 3) Remove Symlinks/Hardlinks
+      # 3. Remove Symlinks, Set Permissions, and Clean Artifacts
       # -------------------------
-      - name: Remove symlinks and hard links
+      - name: Remove symlinks and set permissions
         run: |
-          echo "[INFO] Removing symlinks and hard links..."
+          echo "[INFO] Removing symlinks..."
           mkdir -p docs/build/final
           cp -rL docs/build/html/* docs/build/final
           rm -rf docs/build/html
           mv docs/build/final docs/build/html
-          echo "[INFO] Link removal done."
+          chmod -R a+rX docs/build/html
+          echo "[INFO] Symlinks removed and permissions set."
 
-      # -------------------------
-      # 4) Debug: Verify No Links and Check Size
-      # -------------------------
-      - name: Debug file structure
+      - name: Remove unnecessary files
         run: |
-          echo "=== Check for symlinks (should be none) ==="
-          find docs/build/html -type l -exec ls -la {} \; || true
+          echo "[INFO] Cleaning up unnecessary files..."
+          find docs/build/html -name ".lock" -type f -exec rm -f {} \;
+          find docs/build/html -name ".DS_Store" -type f -exec rm -f {} \;
+          find docs/build/html -name ".git*" -exec rm -rf {} +
+          echo "[INFO] Cleanup complete."
 
-          echo "=== Check for repeated inodes (possible hard links) ==="
-          find docs/build/html -type f -printf '%i %p\n' | sort | uniq -c | awk '$1 > 1 {print $2}'
-
-          echo "=== Check total size of docs/build/html ==="
-          du -sh docs/build/html
-
-      # (Optional) Create .nojekyll File: Prevent GitHub Pages from Ignoring Directories Starting with '_'
-      - name: Create .nojekyll
-        run: echo > docs/build/html/.nojekyll
+      - name: Ensure index.html exists
+        run: |
+          if [ ! -f docs/build/html/index.html ]; then
+            echo "[ERROR] index.html is missing. Deployment cannot proceed."
+            exit 1
+          fi
 
       # -------------------------
-      # 5) Upload Artifact
+      # 4. Upload Artifact
       # -------------------------
       - name: Upload artifact (github-pages)
         uses: actions/upload-artifact@v4
         with:
-          name: github-pages   # actions/deploy-pages@v4 will look for this artifact
+          name: github-pages
           path: docs/build/html
 
-  # -------------------------
-  # Deploy Job
-  # -------------------------
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -88,4 +83,3 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
-        # No additional input needed; will automatically detect and deploy the "github-pages" artifact
