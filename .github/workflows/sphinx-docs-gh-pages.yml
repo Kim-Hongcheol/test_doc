@@ -1,4 +1,4 @@
-name: Build and Deploy Sphinx Docs
+name: Build and Deploy Sphinx Docs (No Symlinks/Hardlinks)
 
 on:
   push:
@@ -12,12 +12,8 @@ permissions:
   id-token: write
 
 jobs:
-  # -------------------------------
-  # 1) 빌드 Job
-  # -------------------------------
   build:
-    runs-on: ubuntu-latest
-
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -36,28 +32,42 @@ jobs:
         run: |
           sphinx-build -b html docs/source docs/build/html
 
-      # 디버깅: Sphinx 빌드 산출물 확인
-      - name: List built files
+      # ============================
+      # 심/하드링크 제거 단계 시작
+      # ============================
+      - name: Convert symlinks and hardlinks to normal files
         run: |
-          echo "===== Sphinx build output ====="
-          ls -R docs/build/html
-          echo "================================"
+          echo "Converting symlinks/hardlinks in docs/build/html to normal files..."
 
-      # (1) 아티팩트 업로드
+          # 1) 변환용 임시 디렉터리 생성
+          mkdir -p docs/build/cleaned_html
+
+          # 2) rsync를 사용해 모든 파일을 따라가며(-L) 복사
+          #    -L 옵션: 심볼릭 링크 대상 파일을 따라가서 복사
+          #    --copy-links 와 유사
+          #    inode가 달라지므로 하드 링크도 끊김
+          rsync -a -L docs/build/html/ docs/build/cleaned_html/
+
+          # 3) 기존 html 폴더 제거 후, cleaned_html을 html로 교체
+          rm -rf docs/build/html
+          mv docs/build/cleaned_html docs/build/html
+
+          echo "All symlinks/hardlinks converted. Listing final output..."
+          ls -R docs/build/html
+
+      # ============================
+      # 심/하드링크 제거 단계 끝
+      # ============================
+
       - name: Upload artifact (github-pages)
         uses: actions/upload-artifact@v4
         with:
-          name: github-pages   # <<-- 꼭 github-pages 라고 명명해야 함
+          name: github-pages
           path: docs/build/html
 
-  # -------------------------------
-  # 2) 배포 Job
-  # -------------------------------
   deploy:
-    needs: build  # build Job이 끝난 뒤에만 실행
-    runs-on: ubuntu-latest
-
+    needs: build
+    runs-on: ubuntu-22.04
     steps:
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
-        # 'github-pages' 아티팩트를 자동 인식하여 배포
