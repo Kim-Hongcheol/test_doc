@@ -1,2 +1,0 @@
-    - name: Create .nojekyll
-      run: echo > _site/.nojekyll
