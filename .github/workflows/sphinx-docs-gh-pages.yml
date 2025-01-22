@@ -50,6 +50,27 @@ jobs:
           rm -rf docs/build/html
           mv docs/build/final docs/build/html
           echo "[INFO] Link removal done."
+      - name: Convert links, excluding . and ..
+        run: |
+          echo "[INFO] Removing symlinks/hardlinks and excluding '.' and '..'..."
+          mkdir -p docs/build/final
+          shopt -s dotglob nullglob
+          for f in docs/build/html/* docs/build/html/.*; do
+            # '.' 혹은 '..'이면 무시
+            if [[ "$f" == *"/." || "$f" == *"/.." ]]; then
+              continue
+            fi
+            # 링크 따라 파일 복사
+            cp -rL "$f" docs/build/final/
+          done
+      
+          # 기존 html 폴더 삭제 후, 새 폴더로 교체
+          rm -rf docs/build/html
+          mv docs/build/final docs/build/html
+      
+          echo "[INFO] Done. Listing final output..."
+          find docs/build/html -ls
+          du -sh docs/build/html
 
       # -------------------------
       # 4) 디버그: symlink, 하드링크, 용량 확인
