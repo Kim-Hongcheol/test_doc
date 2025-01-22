@@ -71,6 +71,22 @@ jobs:
           echo "[INFO] Done. Listing final output..."
           find docs/build/html -ls
           du -sh docs/build/html
+      - name: Tar and untar final directory
+        run: |
+          echo "[INFO] Archiving final directory..."
+          cd docs/build
+          tar -cf html.tar html
+      
+          echo "[INFO] Removing old html folder..."
+          rm -rf html
+      
+          echo "[INFO] Extracting tar to a fresh directory..."
+          mkdir html
+          tar -xf html.tar -C html --strip-components=1
+      
+          echo "[INFO] Done. Listing final output..."
+          find html -ls
+          du -sh html
 
       # -------------------------
       # 4) 디버그: symlink, 하드링크, 용량 확인
