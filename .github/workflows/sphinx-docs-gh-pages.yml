@@ -3,13 +3,13 @@ name: Build and Deploy Docs
 on:
   push:
     branches:
-      - main  # 문서를 배포할 브랜치
-  workflow_dispatch:  # Actions 탭에서 수동 실행 가능
+      - main  # 배포 브랜치
+  workflow_dispatch:  # 수동 실행 가능
 
 permissions:
   contents: read
-  pages: write  # GitHub Pages에 쓰기 권한 설정
-  id-token: write
+  pages: write
+  id-token: write  # Pages 배포에 필요한 권한
 
 jobs:
   build:
@@ -33,8 +33,14 @@ jobs:
       run: |
         sphinx-build -b html docs/source docs/build/html
 
-    - name: Deploy to GitHub Pages
-      uses: actions/deploy-pages@v4  # GitHub Pages 배포를 위한 Action
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v1
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: docs/build/html
+        path: docs/build/html  # Sphinx 빌드 결과 디렉터리
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy to GitHub Pages
+      uses: actions/deploy-pages@v4
