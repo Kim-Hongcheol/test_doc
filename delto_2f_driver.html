@@ -1,0 +1,501 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Delto Gripper-2F ROS2 Driver &mdash; DELTO ROS2 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Delto Gripper-3F" href="delto_3f.html" />
+    <link rel="prev" title="Delto Gripper-2F" href="delto_2f_introduce.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            DELTO ROS2
+              <img src="_static/tesollo-ros.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="delto_2f.html">Delto Gripper-2F</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="delto_2f_introduce.html">Delto Gripper-2F</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Delto Gripper-2F ROS2 Driver</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#key-features">Key Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#usage">Usage</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#launching-the-driver">Launching the Driver</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#topics">Topics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-usage-in-python">Example Usage in Python</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#contributing">Contributing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-delto_2f_driver.delto_2f_driver">delto_2f_driver Package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#delto-2f-driver">delto_2f_driver</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.close_position_callback"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.close_position_callback()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.connect"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.connect()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.get_close_position"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.get_close_position()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.get_current_position"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.get_current_position()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.get_data_timer_callback"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.get_data_timer_callback()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.get_electric_current"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.get_electric_current()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.get_open_position"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.get_open_position()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.grasp"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.grasp()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.grasp_callback"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.grasp_callback()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.high_force_callback"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.high_force_callback()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.joint_state_publisher"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.joint_state_publisher()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.low_force_callback"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.low_force_callback()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.open_position_callback"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.open_position_callback()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.set_close_position"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.set_close_position()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.set_high_force"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.set_high_force()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.set_ip"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.set_ip()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.set_low_force"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.set_low_force()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.set_open_position"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.set_open_position()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#delto_2f_driver.delto_2f_driver.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="delto_3f.html">Delto Gripper-3F</a></li>
+<li class="toctree-l1"><a class="reference internal" href="delto_5f_introduce.html">Delto Gripper-5F</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DELTO ROS2</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="delto_2f.html">Delto Gripper-2F</a></li>
+      <li class="breadcrumb-item active">Delto Gripper-2F ROS2 Driver</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/delto_2f_driver.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="delto-gripper-2f-ros2-driver">
+<h1>Delto Gripper-2F ROS2 Driver<a class="headerlink" href="#delto-gripper-2f-ros2-driver" title="Link to this heading"></a></h1>
+<p>This package provides a ROS2 driver for the Delto Gripper-2F, enabling integration with robotic systems using ROS2.</p>
+<section id="key-features">
+<h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>ROS2 topics and services for controlling the Delto Gripper-2F.</p></li>
+<li><p>Joint state feedback for real-time monitoring.</p></li>
+<li><p>Customizable gripper operation modes.</p></li>
+</ul>
+</section>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>ROS2 (Humble)</p></li>
+<li><p>DELTO 2F Gripper hardware</p></li>
+<li><p>Python dependencies:</p>
+<ul>
+<li><p><cite>rclpy</cite></p></li>
+<li><p><cite>std_msgs</cite></p></li>
+<li><p><cite>sensor_msgs</cite></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h2>
+<section id="launching-the-driver">
+<h3>Launching the Driver<a class="headerlink" href="#launching-the-driver" title="Link to this heading"></a></h3>
+<p>To launch the Delto Gripper-2F driver and connect to the gripper, use the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ros2<span class="w"> </span>run<span class="w"> </span>delto_2f_driver<span class="w"> </span>delto_2f_driver<span class="w"> </span>--ros-args<span class="w"> </span>-p<span class="w"> </span>ip:<span class="o">=</span><span class="m">192</span>.168.0.112<span class="w"> </span>-p<span class="w"> </span>port:<span class="o">=</span><span class="m">10000</span><span class="w"> </span>-p<span class="w"> </span>slaveID:<span class="o">=</span><span class="m">1</span>
+</pre></div>
+</div>
+<p><strong>Optional Parameters:</strong></p>
+<ul class="simple">
+<li><p><cite>ip</cite>: IP address of the gripper (default: <cite>169.254.186.72</cite>)</p></li>
+<li><p><cite>port</cite>: Communication port for the gripper (default: <cite>502</cite>)</p></li>
+<li><p><cite>slaveID</cite>: Modbus slave ID for the gripper (default: <cite>1</cite>)</p></li>
+</ul>
+</section>
+</section>
+<section id="topics">
+<h2>Topics<a class="headerlink" href="#topics" title="Link to this heading"></a></h2>
+<p>The driver communicates via the following topics:</p>
+<p><strong>Published Topics:</strong></p>
+<ul class="simple">
+<li><p><strong>`gripper/joint_states`</strong> (<cite>sensor_msgs/JointState</cite>): Publishes the current joint state of the gripper.</p></li>
+</ul>
+<p><strong>Subscribed Topics:</strong></p>
+<ul class="simple">
+<li><p><strong>`gripper/grasp`</strong> (<cite>std_msgs/Int32</cite>): Controls the gripper’s grasping operation:</p>
+<ul>
+<li><p><cite>0</cite>: Open the gripper.</p></li>
+<li><p><cite>1</cite>: Close the gripper.</p></li>
+</ul>
+</li>
+<li><p><strong>`gripper/low_force`</strong> (<cite>std_msgs/Int32</cite>): Sets the gripper’s low-force threshold.</p></li>
+<li><p><strong>`gripper/high_force`</strong> (<cite>std_msgs/Int32</cite>): Sets the gripper’s high-force threshold.</p></li>
+<li><p><strong>`gripper/open_position`</strong> (<cite>std_msgs/Int32</cite>): Configures the open position of the gripper.</p></li>
+<li><p><strong>`gripper/close_position`</strong> (<cite>std_msgs/Int32</cite>): Configures the close position of the gripper.</p></li>
+</ul>
+</section>
+<section id="example-usage-in-python">
+<h2>Example Usage in Python<a class="headerlink" href="#example-usage-in-python" title="Link to this heading"></a></h2>
+<p>Control the gripper using ROS2 topics:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">std_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">Int32</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">rclpy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rclpy.node</span><span class="w"> </span><span class="kn">import</span> <span class="n">Node</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">GripperControl</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;gripper_control&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">publisher_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_publisher</span><span class="p">(</span><span class="n">Int32</span><span class="p">,</span> <span class="s1">&#39;gripper/grasp&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">open_gripper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">Int32</span><span class="p">()</span>
+        <span class="n">msg</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Open the gripper</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">publisher_</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">close_gripper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">Int32</span><span class="p">()</span>
+        <span class="n">msg</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Close the gripper</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">publisher_</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">rclpy</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">)</span>
+    <span class="n">node</span> <span class="o">=</span> <span class="n">GripperControl</span><span class="p">()</span>
+    <span class="n">node</span><span class="o">.</span><span class="n">open_gripper</span><span class="p">()</span>  <span class="c1"># Example: Open the gripper</span>
+    <span class="n">rclpy</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="contributing">
+<h2>Contributing<a class="headerlink" href="#contributing" title="Link to this heading"></a></h2>
+<p>For bug reports or feature requests, please visit the <a class="reference external" href="https://github.com/Tesollo-Delto/DELTO_ROS2">GitHub Repository</a>.</p>
+</section>
+<section id="module-delto_2f_driver.delto_2f_driver">
+<span id="delto-2f-driver-package"></span><h2>delto_2f_driver Package<a class="headerlink" href="#module-delto_2f_driver.delto_2f_driver" title="Link to this heading"></a></h2>
+<section id="delto-2f-driver">
+<h3>delto_2f_driver<a class="headerlink" href="#delto-2f-driver" title="Link to this heading"></a></h3>
+<p>A ROS2 node to control and read data from a Delto 2-finger gripper
+via Modbus TCP communication. This module defines the <cite>DeltoROSDriver</cite> class.</p>
+<p class="rubric">Example</p>
+<p>To run this node, execute:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ros2<span class="w"> </span>run<span class="w"> </span>delto_2f_driver<span class="w"> </span>delto_2f_driver
+</pre></div>
+</div>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="delto_2f_driver.delto_2f_driver.DeltoROSDriver">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">delto_2f_driver.delto_2f_driver.</span></span><span class="sig-name descname"><span class="pre">DeltoROSDriver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/delto_2f_driver/delto_2f_driver.html#DeltoROSDriver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></p>
+<p>A ROS2 Node to interface with the Delto 2-finger gripper via Modbus TCP.</p>
+<p>This class handles:
+- Establishing a connection to the gripper
+- Subscribing to topics for force settings, open/close positions, and grasp commands
+- Publishing current gripper states (position, force levels) at a defined rate</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the node (defaults to ‘delto_2f_driver’).</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_2f_driver.delto_2f_driver.DeltoROSDriver.close_position_callback">
+<span class="sig-name descname"><span class="pre">close_position_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">std_msgs.msg.Int32</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/delto_2f_driver/delto_2f_driver.html#DeltoROSDriver.close_position_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.close_position_callback" title="Link to this definition"></a></dt>
+<dd><p>Callback function for the ‘gripper/close_position’ topic.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>Int32</em>) – ROS2 message containing the desired close position.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_2f_driver.delto_2f_driver.DeltoROSDriver.connect">
+<span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/delto_2f_driver/delto_2f_driver.html#DeltoROSDriver.connect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.connect" title="Link to this definition"></a></dt>
+<dd><p>Connect to the Delto gripper with provided IP, port, and slave ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the connection is successful, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_2f_driver.delto_2f_driver.DeltoROSDriver.get_close_position">
+<span class="sig-name descname"><span class="pre">get_close_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/delto_2f_driver/delto_2f_driver.html#DeltoROSDriver.get_close_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.get_close_position" title="Link to this definition"></a></dt>
+<dd><p>Get the current close position setting of the gripper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The close position in some integer unit (depends on device).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_2f_driver.delto_2f_driver.DeltoROSDriver.get_current_position">
+<span class="sig-name descname"><span class="pre">get_current_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/delto_2f_driver/delto_2f_driver.html#DeltoROSDriver.get_current_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.get_current_position" title="Link to this definition"></a></dt>
+<dd><p>Get the real-time position of the gripper (read from the device).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The current gripper position.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_2f_driver.delto_2f_driver.DeltoROSDriver.get_data_timer_callback">
+<span class="sig-name descname"><span class="pre">get_data_timer_callback</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/delto_2f_driver/delto_2f_driver.html#DeltoROSDriver.get_data_timer_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.get_data_timer_callback" title="Link to this definition"></a></dt>
+<dd><p>Timer callback to periodically retrieve data from the gripper and
+publish relevant ROS messages (joint state, force thresholds, etc.).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_2f_driver.delto_2f_driver.DeltoROSDriver.get_electric_current">
+<span class="sig-name descname"><span class="pre">get_electric_current</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/delto_2f_driver/delto_2f_driver.html#DeltoROSDriver.get_electric_current"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.get_electric_current" title="Link to this definition"></a></dt>
+<dd><p>Get the electric current value read from the gripper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The gripper’s electric current.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_2f_driver.delto_2f_driver.DeltoROSDriver.get_open_position">
+<span class="sig-name descname"><span class="pre">get_open_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/delto_2f_driver/delto_2f_driver.html#DeltoROSDriver.get_open_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.get_open_position" title="Link to this definition"></a></dt>
+<dd><p>Get the current open position setting of the gripper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The open position in some integer unit (depends on device).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_2f_driver.delto_2f_driver.DeltoROSDriver.grasp">
+<span class="sig-name descname"><span class="pre">grasp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">is_grasp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/delto_2f_driver/delto_2f_driver.html#DeltoROSDriver.grasp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.grasp" title="Link to this definition"></a></dt>
+<dd><p>Send a grasp or release command to the gripper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>is_grasp</strong> (<em>int</em>) – 1 to grasp, 0 to release.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_2f_driver.delto_2f_driver.DeltoROSDriver.grasp_callback">
+<span class="sig-name descname"><span class="pre">grasp_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">std_msgs.msg.Int32</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/delto_2f_driver/delto_2f_driver.html#DeltoROSDriver.grasp_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.grasp_callback" title="Link to this definition"></a></dt>
+<dd><p>Callback function for the ‘gripper/grasp’ topic.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>Int32</em>) – ROS2 message indicating grasp (1) or release (0).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_2f_driver.delto_2f_driver.DeltoROSDriver.high_force_callback">
+<span class="sig-name descname"><span class="pre">high_force_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">std_msgs.msg.Int32</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/delto_2f_driver/delto_2f_driver.html#DeltoROSDriver.high_force_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.high_force_callback" title="Link to this definition"></a></dt>
+<dd><p>Callback function for the ‘gripper/high_force’ topic.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>Int32</em>) – ROS2 message containing the high force value to set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_2f_driver.delto_2f_driver.DeltoROSDriver.joint_state_publisher">
+<span class="sig-name descname"><span class="pre">joint_state_publisher</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/delto_2f_driver/delto_2f_driver.html#DeltoROSDriver.joint_state_publisher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.joint_state_publisher" title="Link to this definition"></a></dt>
+<dd><p>Publish the current joint state (gripper opening distance).
+The position is published in meters (current_position * 0.001).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_2f_driver.delto_2f_driver.DeltoROSDriver.low_force_callback">
+<span class="sig-name descname"><span class="pre">low_force_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">std_msgs.msg.Int32</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/delto_2f_driver/delto_2f_driver.html#DeltoROSDriver.low_force_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.low_force_callback" title="Link to this definition"></a></dt>
+<dd><p>Callback function for the ‘gripper/low_force’ topic.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>Int32</em>) – ROS2 message containing the low force value to set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_2f_driver.delto_2f_driver.DeltoROSDriver.open_position_callback">
+<span class="sig-name descname"><span class="pre">open_position_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">std_msgs.msg.Int32</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/delto_2f_driver/delto_2f_driver.html#DeltoROSDriver.open_position_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.open_position_callback" title="Link to this definition"></a></dt>
+<dd><p>Callback function for the ‘gripper/open_position’ topic.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>Int32</em>) – ROS2 message containing the desired open position.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_2f_driver.delto_2f_driver.DeltoROSDriver.set_close_position">
+<span class="sig-name descname"><span class="pre">set_close_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/delto_2f_driver/delto_2f_driver.html#DeltoROSDriver.set_close_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.set_close_position" title="Link to this definition"></a></dt>
+<dd><p>Set the close position of the gripper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>position</strong> (<em>int</em>) – The close position in integer units.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_2f_driver.delto_2f_driver.DeltoROSDriver.set_high_force">
+<span class="sig-name descname"><span class="pre">set_high_force</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/delto_2f_driver/delto_2f_driver.html#DeltoROSDriver.set_high_force"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.set_high_force" title="Link to this definition"></a></dt>
+<dd><p>Set the high force threshold of the gripper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>force</strong> (<em>int</em>) – The force value for high threshold.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_2f_driver.delto_2f_driver.DeltoROSDriver.set_ip">
+<span class="sig-name descname"><span class="pre">set_ip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/delto_2f_driver/delto_2f_driver.html#DeltoROSDriver.set_ip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.set_ip" title="Link to this definition"></a></dt>
+<dd><p>Set a new IP address for the Modbus TCP client.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ip</strong> (<em>str</em>) – The IP address to set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_2f_driver.delto_2f_driver.DeltoROSDriver.set_low_force">
+<span class="sig-name descname"><span class="pre">set_low_force</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/delto_2f_driver/delto_2f_driver.html#DeltoROSDriver.set_low_force"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.set_low_force" title="Link to this definition"></a></dt>
+<dd><p>Set the low force threshold of the gripper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>force</strong> (<em>int</em>) – The force value for low threshold.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_2f_driver.delto_2f_driver.DeltoROSDriver.set_open_position">
+<span class="sig-name descname"><span class="pre">set_open_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/delto_2f_driver/delto_2f_driver.html#DeltoROSDriver.set_open_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_2f_driver.delto_2f_driver.DeltoROSDriver.set_open_position" title="Link to this definition"></a></dt>
+<dd><p>Set the open position of the gripper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>position</strong> (<em>int</em>) – The open position in integer units.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="delto_2f_driver.delto_2f_driver.main">
+<span class="sig-prename descclassname"><span class="pre">delto_2f_driver.delto_2f_driver.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/delto_2f_driver/delto_2f_driver.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_2f_driver.delto_2f_driver.main" title="Link to this definition"></a></dt>
+<dd><p>Main entry point for the Delto 2F ROS driver node.</p>
+<p>Initializes the node, attempts to connect to the gripper,
+and starts the multi-threaded executor to handle callbacks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> (<em>list</em><em> or </em><em>None</em>) – Command-line arguments (default: None).</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="delto_2f_introduce.html" class="btn btn-neutral float-left" title="Delto Gripper-2F" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="delto_3f.html" class="btn btn-neutral float-right" title="Delto Gripper-3F" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, TESOLLO.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

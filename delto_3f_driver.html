@@ -1,0 +1,637 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Delto Gripper-3F ROS2 Driver &mdash; DELTO ROS2 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="RQT DG3F Publisher" href="rqt_dg3f_publisher.html" />
+    <link rel="prev" title="Delto Gripper-3F" href="delto_3f_introduce.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            DELTO ROS2
+              <img src="_static/tesollo-ros.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="delto_2f.html">Delto Gripper-2F</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="delto_3f.html">Delto Gripper-3F</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="delto_3f_introduce.html">Delto Gripper-3F</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Delto Gripper-3F ROS2 Driver</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#key-features">Key Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#usage">Usage</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#launching-the-driver">Launching the Driver</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ros2-control-integration">ROS2 Control Integration</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#topics">Topics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#controllers">Controllers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-usage-in-python">Example Usage in Python</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#customization">Customization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#contributing">Contributing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-delto_3f_driver.delto_3f_driver">delto_3f_driver Package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#delto-3f-gripper-ros2-driver">Delto 3F Gripper ROS2 Driver</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.cancel_callback"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.cancel_callback()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.connect"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.connect()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.execute_callback"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.execute_callback()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.fixed_joint_callback"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.fixed_joint_callback()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.get_position"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.get_position()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.goal_callback"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.goal_callback()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.grasp_callback"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.grasp_callback()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.grasp_mode_callback"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.grasp_mode_callback()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.joint_state_publisher"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.joint_state_publisher()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.load_pose_callback"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.load_pose_callback()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.read_joint_callback"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.read_joint_callback()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.reconnect_callback"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.reconnect_callback()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.save_pose_callback"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.save_pose_callback()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.set_gain_callback"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.set_gain_callback()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.set_motion_step"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.set_motion_step()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.set_position"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.set_position()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.stop_motion"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.stop_motion()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.target_joint_callback"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.target_joint_callback()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.timer_callback"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.timer_callback()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.waypointMove"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.waypointMove()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.write_register_callback"><code class="docutils literal notranslate"><span class="pre">DeltoROSDriver.write_register_callback()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#delto_3f_driver.delto_3f_driver.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rqt_dg3f_publisher.html">RQT DG3F Publisher</a></li>
+<li class="toctree-l2"><a class="reference internal" href="delto_3f_ros2_control.html">Delto Gripper-3F ROS2 Control Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="delto_5f_introduce.html">Delto Gripper-5F</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DELTO ROS2</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="delto_3f.html">Delto Gripper-3F</a></li>
+      <li class="breadcrumb-item active">Delto Gripper-3F ROS2 Driver</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/delto_3f_driver.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="delto-gripper-3f-ros2-driver">
+<h1>Delto Gripper-3F ROS2 Driver<a class="headerlink" href="#delto-gripper-3f-ros2-driver" title="Link to this heading"></a></h1>
+<p>This package provides a ROS2 driver for the Delto Gripper-3F, allowing for integration with robotic systems using ROS2.</p>
+<section id="key-features">
+<h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Supports Delto Gripper-3F control via ROS2 topics, services, and actions.</p></li>
+<li><p>Includes ROS2 control integration with hardware interface and controllers.</p></li>
+<li><p>Provides RViz visualization support for real-time monitoring.</p></li>
+<li><p>Offers fake mode for simulation and debugging.</p></li>
+</ul>
+</section>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>ROS2 (humble)</p></li>
+<li><p>Delto Gripper-3F hardware</p></li>
+<li><p>Python dependencies:</p>
+<ul>
+<li><p><cite>rclpy</cite></p></li>
+<li><p><cite>trajectory_msgs</cite></p></li>
+<li><p><cite>control_msgs</cite></p></li>
+<li><p><cite>std_msgs</cite></p></li>
+<li><p><cite>sensor_msgs</cite></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h2>
+<section id="launching-the-driver">
+<h3>Launching the Driver<a class="headerlink" href="#launching-the-driver" title="Link to this heading"></a></h3>
+<p>To launch the driver and connect to the gripper, use the following commands:</p>
+<p><strong>Visualize using RViz2:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ros2<span class="w"> </span>launch<span class="w"> </span>delto_3f_driver<span class="w"> </span>delto_3f_bringup.launch.py<span class="w"> </span>delto_ip:<span class="o">=</span><span class="m">192</span>.168.0.112<span class="w"> </span>delto_port:<span class="o">=</span><span class="m">502</span><span class="w"> </span>delto_id:<span class="o">=</span><span class="m">255</span><span class="w"> </span>launch_rviz:<span class="o">=</span><span class="nb">true</span>
+</pre></div>
+</div>
+<p><strong>Optional Parameters:</strong></p>
+<ul class="simple">
+<li><p><cite>delto_ip</cite>: IP address of the gripper (default: <cite>169.254.186.72</cite>)</p></li>
+<li><p><cite>delto_port</cite>: Port for the gripper communication (default: <cite>502</cite>)</p></li>
+<li><p><cite>delto_id</cite>: Modbus slave ID for the gripper (default: <cite>1</cite>)</p></li>
+<li><p><cite>launch_rviz</cite>: Launch RViz visualization (default: <cite>true</cite>)</p></li>
+<li><p><cite>fake_mode</cite>: Enable simulation mode without hardware (default: <cite>false</cite>)</p></li>
+</ul>
+</section>
+<section id="ros2-control-integration">
+<h3>ROS2 Control Integration<a class="headerlink" href="#ros2-control-integration" title="Link to this heading"></a></h3>
+<p>To launch the Delto Gripper-3F driver with ROS2 Control integration:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ros2<span class="w"> </span>launch<span class="w"> </span>delto_3f_driver<span class="w"> </span>delto_3f_ros2_control.launch.py<span class="w"> </span>delto_ip:<span class="o">=</span><span class="m">192</span>.168.0.112<span class="w"> </span>delto_port:<span class="o">=</span><span class="m">502</span>
+</pre></div>
+</div>
+<p><strong>Optional Parameters:</strong></p>
+<ul class="simple">
+<li><p><cite>delto_ip</cite>: IP address of the Gripper (default: <cite>169.254.186.72</cite>)</p></li>
+<li><p><cite>delto_port</cite>: Port for Gripper communication (default: <cite>502</cite>)</p></li>
+</ul>
+</section>
+</section>
+<section id="topics">
+<h2>Topics<a class="headerlink" href="#topics" title="Link to this heading"></a></h2>
+<p>The driver communicates via the following topics:</p>
+<p><strong>Published Topics:</strong></p>
+<ul class="simple">
+<li><p><cite>/gripper/joint_states</cite> (<cite>sensor_msgs/JointState</cite>): Publishes the current joint states.</p></li>
+</ul>
+<p><strong>Subscribed Topics:</strong></p>
+<ul class="simple">
+<li><p><cite>/gripper/target_joint</cite> (<cite>std_msgs/Float32MultiArray</cite>): Target joint positions (in radians).</p></li>
+<li><p><cite>/gripper/grasp_mode</cite> (<cite>std_msgs/Int32</cite>): Grasp mode commands:</p>
+<ul>
+<li><p><cite>0</cite>: Release.</p></li>
+<li><p><cite>1</cite>: 3F Grasp.</p></li>
+<li><p><cite>2~4</cite>: 2F Grasp.</p></li>
+<li><p><cite>5</cite>: Parallel Grasp.</p></li>
+<li><p><cite>6</cite>: Envelope Grasp.</p></li>
+</ul>
+</li>
+</ul>
+<p>more topic details can be found in the <cite>delto_3f_driver</cite> package.</p>
+</section>
+<section id="controllers">
+<h2>Controllers<a class="headerlink" href="#controllers" title="Link to this heading"></a></h2>
+<p>The Delto Gripper-3F ROS2 driver uses the following controllers:</p>
+<ul class="simple">
+<li><p><cite>joint_state_broadcaster</cite>: Broadcasts joint states for visualization and monitoring.</p></li>
+<li><p><cite>delto_3f_controller</cite>: Manages joint trajectory commands for the gripper.</p></li>
+</ul>
+</section>
+<section id="example-usage-in-python">
+<h2>Example Usage in Python<a class="headerlink" href="#example-usage-in-python" title="Link to this heading"></a></h2>
+<p>Set target joint positions:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">std_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">Float32MultiArray</span>
+
+<span class="n">target_joint</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">12</span>  <span class="c1"># Target joint positions (12 joints)</span>
+<span class="n">send_msg</span> <span class="o">=</span> <span class="n">Float32MultiArray</span><span class="p">()</span>
+<span class="n">send_msg</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">target_joint</span>
+
+<span class="c1"># Publish the message to &#39;gripper/target_joint&#39;</span>
+</pre></div>
+</div>
+<p>Set grasp mode:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">std_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">Int32</span>
+
+<span class="n">grasp_cmd</span> <span class="o">=</span> <span class="n">Int32</span><span class="p">()</span>
+<span class="n">grasp_cmd</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># 1: 3F Grasp.</span>
+
+<span class="c1"># Publish the message to &#39;gripper/grasp_mode&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="customization">
+<h2>Customization<a class="headerlink" href="#customization" title="Link to this heading"></a></h2>
+<p>You can customize the behavior of the Delto Gripper-3F driver using the launch file parameters:</p>
+<p><strong>Bringup Parameters (`delto_3f_bringup.launch.py`):</strong></p>
+<ul class="simple">
+<li><p><cite>ip</cite>: IP address of the gripper.</p></li>
+<li><p><cite>port</cite>: Port for communication.</p></li>
+<li><p><cite>id</cite>: Modbus slave ID.</p></li>
+<li><p><cite>launch_rviz</cite>: Enable or disable RViz visualization.</p></li>
+<li><p><cite>fake_mode</cite>: Enable fake mode for testing.</p></li>
+</ul>
+</section>
+<section id="contributing">
+<h2>Contributing<a class="headerlink" href="#contributing" title="Link to this heading"></a></h2>
+<p>For bug reports or feature requests, please visit the <a class="reference external" href="https://github.com/Tesollo-Delto/DELTO_ROS2">GitHub Repository</a>.</p>
+</section>
+<section id="module-delto_3f_driver.delto_3f_driver">
+<span id="delto-3f-driver-package"></span><h2>delto_3f_driver Package<a class="headerlink" href="#module-delto_3f_driver.delto_3f_driver" title="Link to this heading"></a></h2>
+<section id="delto-3f-gripper-ros2-driver">
+<h3>Delto 3F Gripper ROS2 Driver<a class="headerlink" href="#delto-3f-gripper-ros2-driver" title="Link to this heading"></a></h3>
+<p>This module provides a ROS2 node for controlling the Delto 3F gripper. It communicates
+with the actual hardware via Modbus TCP and offers various messages and actions
+to control and monitor the gripper.</p>
+<p>Key features:</p>
+<ul class="simple">
+<li><p>Read the current joint angles of the gripper</p></li>
+<li><p>Set target joint angles</p></li>
+<li><p>Save/load gripper poses to/from internal memory</p></li>
+<li><p>Execute a grasp command and switch between different grasp modes</p></li>
+<li><p>Update and retrieve P/D gains</p></li>
+<li><p>Provide a FollowJointTrajectory action server</p></li>
+</ul>
+<p class="rubric">Example</p>
+<p>Below is a basic example of how to run this node via the <code class="docutils literal notranslate"><span class="pre">main()</span></code> function:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ros2<span class="w"> </span>run<span class="w"> </span>delto_3f_driver<span class="w"> </span>delto_3f_driver
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This node depends on ROS2 parameters (<cite>ip</cite>, <cite>port</cite>, <cite>slaveID</cite>, <cite>dummy</cite>).
+In a typical setup, these parameters would be injected via a launch file.</p>
+</div>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="delto_3f_driver.delto_3f_driver.DeltoROSDriver">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">delto_3f_driver.delto_3f_driver.</span></span><span class="sig-name descname"><span class="pre">DeltoROSDriver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/delto_3f_driver/delto_3f_driver.html#DeltoROSDriver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></p>
+<p>A ROS2 node class for controlling the Delto 3F gripper.</p>
+<p>This class inherits from the ROS2 Node and provides the following key attributes:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>joint_state_list</strong> (<em>list</em><em>[</em><em>float</em><em>]</em>) – List of waypoints (desired JointTrajectory points).</p></li>
+<li><p><strong>current_joint_state</strong> (<em>list</em><em>[</em><em>float</em><em>]</em>) – Current joint angles of the gripper (in radians).</p></li>
+<li><p><strong>target_joint_state</strong> (<em>list</em><em>[</em><em>float</em><em>]</em>) – Target gripper joint angles (in radians).</p></li>
+<li><p><strong>fixed_joint_state</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – Fixed joint values (e.g. for locking certain joints).</p></li>
+<li><p><strong>joint_state_feedback</strong> (<em>JointTrajectoryPoint</em>) – A JointTrajectoryPoint object used for action feedback.</p></li>
+<li><p><strong>vel</strong> (<em>list</em>) – (Currently unused) A placeholder for velocity or speed-related parameters.</p></li>
+<li><p><strong>delto_client</strong> (<em>delto_TCP.Communication</em>) – A Modbus TCP client for low-level communication with the gripper hardware.</p></li>
+<li><p><strong>stop_thread</strong> (<em>bool</em>) – A boolean flag to stop the waypoint moving thread.</p></li>
+<li><p><strong>lock</strong> (<em>threading.Lock</em>) – A threading lock for resource synchronization in multi-threaded environments.</p></li>
+<li><p><strong>is_connected</strong> (<em>bool</em>) – A flag indicating whether the gripper is successfully connected.</p></li>
+<li><p><strong>publish_rate</strong> (<em>int</em>) – Frequency (Hz) at which JointState messages are published.</p></li>
+<li><p><strong>is_dummy</strong> (<em>bool</em>) – Whether to operate in a dummy (simulation) mode instead of real hardware.</p></li>
+<li><p><strong>jcm_action_server</strong> (<em>ActionServer</em>) – FollowJointTrajectory action server.</p></li>
+<li><p><strong>joint_state_pub</strong> (<em>Publisher</em>) – Publisher for JointState messages.</p></li>
+<li><p><strong>grasp_sub</strong> (<em>Subscription</em>) – Subscription to Bool topic (to trigger grasp operation).</p></li>
+<li><p><strong>write_register_sub</strong> (<em>Subscription</em>) – Subscription to Int16MultiArray topic (to write directly to registers).</p></li>
+<li><p><strong>grasp_mode_sub</strong> (<em>Subscription</em>) – Subscription to Int32 topic (to set a grasp mode).</p></li>
+<li><p><strong>target_joint_sub</strong> (<em>Subscription</em>) – Subscription to Float32MultiArray topic (to set target joint angles).</p></li>
+<li><p><strong>joint_state_timer</strong> (<em>Timer</em>) – Timer for JointState publishing.</p></li>
+<li><p><strong>read_joint_timer</strong> (<em>Timer</em>) – Timer for reading current joint angles.</p></li>
+<li><p><strong>fixed_joint_sub</strong> (<em>Subscription</em>) – Subscription to Int16MultiArray topic (to lock particular joints).</p></li>
+<li><p><strong>set_gain_sub</strong> (<em>Subscription</em>) – Subscription to Int16MultiArray topic (to set P/D gains).</p></li>
+<li><p><strong>gain_pub</strong> (<em>Publisher</em>) – Publisher for Int16MultiArray topic (to respond with current P/D gains).</p></li>
+<li><p><strong>load_pose_sub</strong> (<em>Subscription</em>) – Subscription to Int32 topic (to load a pose from internal storage).</p></li>
+<li><p><strong>save_pose_sub</strong> (<em>Subscription</em>) – Subscription to Int32 topic (to save a pose to internal storage).</p></li>
+<li><p><strong>reconnect_timer</strong> (<em>Timer</em>) – Timer to periodically attempt reconnection when the connection is lost.</p></li>
+<li><p><strong>reconnect_attempts</strong> (<em>int</em>) – Count of how many times reconnection has been attempted.</p></li>
+<li><p><strong>max_reconnect_attempts</strong> (<em>int</em>) – Maximum number of reconnection attempts before giving up.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_3f_driver.delto_3f_driver.DeltoROSDriver.cancel_callback">
+<span class="sig-name descname"><span class="pre">cancel_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">goal_handle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/delto_3f_driver/delto_3f_driver.html#DeltoROSDriver.cancel_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.cancel_callback" title="Link to this definition"></a></dt>
+<dd><p>Callback for receiving a cancel request in the FollowJointTrajectory action server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>goal_handle</strong> (<em>ServerGoalHandle</em>) – The goal handle to be canceled.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>CancelResponse.ACCEPT</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_3f_driver.delto_3f_driver.DeltoROSDriver.connect">
+<span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/delto_3f_driver/delto_3f_driver.html#DeltoROSDriver.connect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.connect" title="Link to this definition"></a></dt>
+<dd><p>Attempts to connect to the Delto gripper.
+Internally calls <code class="docutils literal notranslate"><span class="pre">self.delto_client.connect()</span></code>. If successful,
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">is_connected</span></code> is set to True.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the connection succeeds, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_3f_driver.delto_3f_driver.DeltoROSDriver.execute_callback">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">execute_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">goal_handle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/delto_3f_driver/delto_3f_driver.html#DeltoROSDriver.execute_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.execute_callback" title="Link to this definition"></a></dt>
+<dd><p>Executes the trajectory received via the FollowJointTrajectory action server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>goal_handle</strong> (<em>ServerGoalHandle</em>) – Goal handle containing the trajectory.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A result object indicating success/failure.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>FollowJointTrajectory.Result</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_3f_driver.delto_3f_driver.DeltoROSDriver.fixed_joint_callback">
+<span class="sig-name descname"><span class="pre">fixed_joint_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/delto_3f_driver/delto_3f_driver.html#DeltoROSDriver.fixed_joint_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.fixed_joint_callback" title="Link to this definition"></a></dt>
+<dd><p>Callback for receiving fixed joint states (locking certain joints)
+via an Int16MultiArray with 12 elements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>Int16MultiArray</em>) – Contains 12 integers specifying fixed joint values.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p>Logs an error if the message length is not 12.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_3f_driver.delto_3f_driver.DeltoROSDriver.get_position">
+<span class="sig-name descname"><span class="pre">get_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/delto_3f_driver/delto_3f_driver.html#DeltoROSDriver.get_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.get_position" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the current joint angles (in degrees) from the gripper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of current joint angles in degrees.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[float]</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Logs an error if the connection is lost.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_3f_driver.delto_3f_driver.DeltoROSDriver.goal_callback">
+<span class="sig-name descname"><span class="pre">goal_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">goal_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/delto_3f_driver/delto_3f_driver.html#DeltoROSDriver.goal_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.goal_callback" title="Link to this definition"></a></dt>
+<dd><p>Callback for receiving a goal request in the FollowJointTrajectory action server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>goal_request</strong> (<em>FollowJointTrajectory.GoalRequest</em>) – The incoming goal request.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>GoalResponse.ACCEPT</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_3f_driver.delto_3f_driver.DeltoROSDriver.grasp_callback">
+<span class="sig-name descname"><span class="pre">grasp_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grasp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">std_msgs.msg.Bool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/delto_3f_driver/delto_3f_driver.html#DeltoROSDriver.grasp_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.grasp_callback" title="Link to this definition"></a></dt>
+<dd><p>Callback function to execute a grasp operation.
+If True, the gripper will close; if False, it will open.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>grasp</strong> (<em>Bool</em>) – Whether to close (True) or open (False) the gripper.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_3f_driver.delto_3f_driver.DeltoROSDriver.grasp_mode_callback">
+<span class="sig-name descname"><span class="pre">grasp_mode_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">std_msgs.msg.Int32</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/delto_3f_driver/delto_3f_driver.html#DeltoROSDriver.grasp_mode_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.grasp_mode_callback" title="Link to this definition"></a></dt>
+<dd><p>Callback function to set the gripper’s grasp mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mode</strong> (<em>Int32</em>) – The desired grasp mode (e.g., PINCH, WIDE, etc., depending on implementation).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_3f_driver.delto_3f_driver.DeltoROSDriver.joint_state_publisher">
+<span class="sig-name descname"><span class="pre">joint_state_publisher</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/delto_3f_driver/delto_3f_driver.html#DeltoROSDriver.joint_state_publisher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.joint_state_publisher" title="Link to this definition"></a></dt>
+<dd><p>Publishes a JointState message using <code class="xref py py-attr docutils literal notranslate"><span class="pre">current_joint_state</span></code>.
+Also updates <code class="xref py py-attr docutils literal notranslate"><span class="pre">joint_state_feedback</span></code> for action feedback purposes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_3f_driver.delto_3f_driver.DeltoROSDriver.load_pose_callback">
+<span class="sig-name descname"><span class="pre">load_pose_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/delto_3f_driver/delto_3f_driver.html#DeltoROSDriver.load_pose_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.load_pose_callback" title="Link to this definition"></a></dt>
+<dd><p>Loads a stored gripper pose (index range: 1~30) from internal EEPROM.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>Int32</em>) – The pose index to be loaded</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p>Logs an error if the index is out of valid range (1~30).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_3f_driver.delto_3f_driver.DeltoROSDriver.read_joint_callback">
+<span class="sig-name descname"><span class="pre">read_joint_callback</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/delto_3f_driver/delto_3f_driver.html#DeltoROSDriver.read_joint_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.read_joint_callback" title="Link to this definition"></a></dt>
+<dd><p>Reads the current joint angles of the gripper (in degrees) and updates
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">current_joint_state</span></code> (in radians).</p>
+<p>If the connection is lost or an exception occurs, logs an error and sets
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">is_connected</span></code> to False.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_3f_driver.delto_3f_driver.DeltoROSDriver.reconnect_callback">
+<span class="sig-name descname"><span class="pre">reconnect_callback</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/delto_3f_driver/delto_3f_driver.html#DeltoROSDriver.reconnect_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.reconnect_callback" title="Link to this definition"></a></dt>
+<dd><p>A periodic callback that attempts to reconnect to the gripper if the connection is lost.
+If <code class="xref py py-attr docutils literal notranslate"><span class="pre">reconnect_attempts</span></code> exceeds <code class="xref py py-attr docutils literal notranslate"><span class="pre">max_reconnect_attempts</span></code>, the node is shut down.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_3f_driver.delto_3f_driver.DeltoROSDriver.save_pose_callback">
+<span class="sig-name descname"><span class="pre">save_pose_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/delto_3f_driver/delto_3f_driver.html#DeltoROSDriver.save_pose_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.save_pose_callback" title="Link to this definition"></a></dt>
+<dd><p>Saves the current gripper pose to a specified index (range: 1~30) in the internal EEPROM.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>Int32</em>) – The pose index to save to</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p>Logs an error if the index is out of valid range (1~30).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_3f_driver.delto_3f_driver.DeltoROSDriver.set_gain_callback">
+<span class="sig-name descname"><span class="pre">set_gain_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/delto_3f_driver/delto_3f_driver.html#DeltoROSDriver.set_gain_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.set_gain_callback" title="Link to this definition"></a></dt>
+<dd><p>Callback function to set P/D gains.
+The <code class="docutils literal notranslate"><span class="pre">msg.data</span></code> is expected to have 24 elements, the first 12 for P gains, and the next 12 for D gains.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>Int16MultiArray</em>) – Int16MultiArray with 24 elements (12 for P, 12 for D)</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p>Logs an error if the array size is not 24.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_3f_driver.delto_3f_driver.DeltoROSDriver.set_motion_step">
+<span class="sig-name descname"><span class="pre">set_motion_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">step</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/delto_3f_driver/delto_3f_driver.html#DeltoROSDriver.set_motion_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.set_motion_step" title="Link to this definition"></a></dt>
+<dd><p>Sets the motion step (i.e., a step size or movement resolution).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>step</strong> (<em>int</em>) – An integer specifying the step size.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_3f_driver.delto_3f_driver.DeltoROSDriver.set_position">
+<span class="sig-name descname"><span class="pre">set_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/delto_3f_driver/delto_3f_driver.html#DeltoROSDriver.set_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.set_position" title="Link to this definition"></a></dt>
+<dd><p>Sends a command to move the gripper to the specified angles (in degrees).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>position</strong> (<em>list</em><em>[</em><em>float</em><em>]</em>) – Desired joint angles in degrees</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p>Logs an error if the connection is lost or failed to set position.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_3f_driver.delto_3f_driver.DeltoROSDriver.stop_motion">
+<span class="sig-name descname"><span class="pre">stop_motion</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/delto_3f_driver/delto_3f_driver.html#DeltoROSDriver.stop_motion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.stop_motion" title="Link to this definition"></a></dt>
+<dd><p>Stops the current motion by setting the position to the current gripper pose,
+effectively halting any ongoing trajectory motion.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_3f_driver.delto_3f_driver.DeltoROSDriver.target_joint_callback">
+<span class="sig-name descname"><span class="pre">target_joint_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/delto_3f_driver/delto_3f_driver.html#DeltoROSDriver.target_joint_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.target_joint_callback" title="Link to this definition"></a></dt>
+<dd><p>Callback for receiving the target joint angles (in radians)
+via a Float32MultiArray with 12 elements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>Float32MultiArray</em>) – Contains 12 floats representing target joint angles in radians.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p>Logs an error if the message length is not 12.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_3f_driver.delto_3f_driver.DeltoROSDriver.timer_callback">
+<span class="sig-name descname"><span class="pre">timer_callback</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/delto_3f_driver/delto_3f_driver.html#DeltoROSDriver.timer_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.timer_callback" title="Link to this definition"></a></dt>
+<dd><p>Periodic timer callback. If the connection is active,
+publishes <a class="reference internal" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.joint_state_publisher" title="delto_3f_driver.delto_3f_driver.DeltoROSDriver.joint_state_publisher"><code class="xref py py-meth docutils literal notranslate"><span class="pre">joint_state_publisher()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_3f_driver.delto_3f_driver.DeltoROSDriver.waypointMove">
+<span class="sig-name descname"><span class="pre">waypointMove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">waypointList</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/delto_3f_driver/delto_3f_driver.html#DeltoROSDriver.waypointMove"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.waypointMove" title="Link to this definition"></a></dt>
+<dd><p>Spawns a separate thread that iterates over the list of waypoints,
+moving the gripper to each waypoint in turn.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>waypointList</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>]</em><em>]</em>) – A list of waypoints, where each waypoint is 12 joint angles in degrees.</p></li>
+<li><p><strong>threshold</strong> (<em>float</em>) – Threshold for considering a waypoint reached (fractional error tolerance).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_3f_driver.delto_3f_driver.DeltoROSDriver.write_register_callback">
+<span class="sig-name descname"><span class="pre">write_register_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/delto_3f_driver/delto_3f_driver.html#DeltoROSDriver.write_register_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.write_register_callback" title="Link to this definition"></a></dt>
+<dd><p>A callback function to write data directly to specific registers of the module.
+For instance, the Int16MultiArray might be structured as
+(start_register_address, data1, data2, …).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>Int16MultiArray</em>) – The first element is the register address, the subsequent elements are the actual data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="delto_3f_driver.delto_3f_driver.main">
+<span class="sig-prename descclassname"><span class="pre">delto_3f_driver.delto_3f_driver.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/delto_3f_driver/delto_3f_driver.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_3f_driver.delto_3f_driver.main" title="Link to this definition"></a></dt>
+<dd><p>Initializes and runs the node.
+Attempts to connect to the gripper hardware via <a class="reference internal" href="#delto_3f_driver.delto_3f_driver.DeltoROSDriver.connect" title="delto_3f_driver.delto_3f_driver.DeltoROSDriver.connect"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DeltoROSDriver.connect()</span></code></a>,
+then starts the ROS2 spinner.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> (<em>list</em><em>, </em><em>optional</em>) – Command-line arguments</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="delto_3f_introduce.html" class="btn btn-neutral float-left" title="Delto Gripper-3F" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="rqt_dg3f_publisher.html" class="btn btn-neutral float-right" title="RQT DG3F Publisher" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, TESOLLO.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

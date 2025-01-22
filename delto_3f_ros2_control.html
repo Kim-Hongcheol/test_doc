@@ -1,0 +1,221 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Delto Gripper-3F ROS2 Control Configuration &mdash; DELTO ROS2 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="&lt;no title&gt;" href="delto_5f.html" />
+    <link rel="prev" title="RQT DG3F Publisher" href="rqt_dg3f_publisher.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            DELTO ROS2
+              <img src="_static/tesollo-ros.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="delto_2f.html">Delto Gripper-2F</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="delto_3f.html">Delto Gripper-3F</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="delto_3f_introduce.html">Delto Gripper-3F</a></li>
+<li class="toctree-l2"><a class="reference internal" href="delto_3f_driver.html">Delto Gripper-3F ROS2 Driver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rqt_dg3f_publisher.html">RQT DG3F Publisher</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Delto Gripper-3F ROS2 Control Configuration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#controller-and-broadcaster-configuration">Controller and Broadcaster Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#explanation">Explanation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-use">How to Use</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="delto_5f_introduce.html">Delto Gripper-5F</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DELTO ROS2</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="delto_3f.html">Delto Gripper-3F</a></li>
+      <li class="breadcrumb-item active">Delto Gripper-3F ROS2 Control Configuration</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/delto_3f_ros2_control.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="delto-gripper-3f-ros2-control-configuration">
+<h1>Delto Gripper-3F ROS2 Control Configuration<a class="headerlink" href="#delto-gripper-3f-ros2-control-configuration" title="Link to this heading"></a></h1>
+<p>We are excited to announce that the <strong>Delto Gripper-3F</strong> supports <strong>ros2_control</strong>! Below is an example configuration for integrating the gripper with a ROS 2 system using the <cite>joint_trajectory_controller</cite> and <cite>joint_state_broadcaster</cite>.</p>
+<section id="controller-and-broadcaster-configuration">
+<h2>Controller and Broadcaster Configuration<a class="headerlink" href="#controller-and-broadcaster-configuration" title="Link to this heading"></a></h2>
+<p>Below is the YAML configuration for the <strong>Delto Gripper-3F</strong> in a <cite>ros2_control</cite> framework:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">controller_manager</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">ros__parameters</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">update_rate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">500</span><span class="w">  </span><span class="c1"># Joint state pub rate</span>
+
+<span class="w">    </span><span class="nt">joint_state_broadcaster</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">joint_state_broadcaster/JointStateBroadcaster</span>
+
+<span class="w">    </span><span class="nt">delto_3f_controller</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">joint_trajectory_controller/JointTrajectoryController</span>
+
+<span class="nt">delto_3f_controller</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">ros__parameters</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">state_publish_rate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">500.0</span>
+<span class="w">    </span><span class="nt">action_monitor_rate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">500.0</span>
+<span class="w">    </span><span class="nt">gains</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">F1M1</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">p</span><span class="p">:</span><span class="w"> </span><span class="nv">1.2</span><span class="p p-Indicator">,</span><span class="nt"> i</span><span class="p">:</span><span class="w"> </span><span class="nv">0.0</span><span class="p p-Indicator">,</span><span class="nt"> d</span><span class="p">:</span><span class="w"> </span><span class="nv">0.1</span><span class="p p-Indicator">,</span><span class="nt"> i_clamp</span><span class="p">:</span><span class="w"> </span><span class="nv">0.0</span><span class="p p-Indicator">}</span>
+<span class="w">      </span><span class="nt">F1M2</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">p</span><span class="p">:</span><span class="w"> </span><span class="nv">1.2</span><span class="p p-Indicator">,</span><span class="nt"> i</span><span class="p">:</span><span class="w"> </span><span class="nv">0.0</span><span class="p p-Indicator">,</span><span class="nt"> d</span><span class="p">:</span><span class="w"> </span><span class="nv">0.1</span><span class="p p-Indicator">,</span><span class="nt"> i_clamp</span><span class="p">:</span><span class="w"> </span><span class="nv">0.0</span><span class="p p-Indicator">}</span>
+<span class="w">      </span><span class="nt">F1M3</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">p</span><span class="p">:</span><span class="w"> </span><span class="nv">1.2</span><span class="p p-Indicator">,</span><span class="nt"> i</span><span class="p">:</span><span class="w"> </span><span class="nv">0.0</span><span class="p p-Indicator">,</span><span class="nt"> d</span><span class="p">:</span><span class="w"> </span><span class="nv">0.1</span><span class="p p-Indicator">,</span><span class="nt"> i_clamp</span><span class="p">:</span><span class="w"> </span><span class="nv">0.0</span><span class="p p-Indicator">}</span>
+<span class="w">      </span><span class="nt">F1M4</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">p</span><span class="p">:</span><span class="w"> </span><span class="nv">1.2</span><span class="p p-Indicator">,</span><span class="nt"> i</span><span class="p">:</span><span class="w"> </span><span class="nv">0.0</span><span class="p p-Indicator">,</span><span class="nt"> d</span><span class="p">:</span><span class="w"> </span><span class="nv">0.1</span><span class="p p-Indicator">,</span><span class="nt"> i_clamp</span><span class="p">:</span><span class="w"> </span><span class="nv">0.0</span><span class="p p-Indicator">}</span>
+<span class="w">      </span><span class="nt">F2M1</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">p</span><span class="p">:</span><span class="w"> </span><span class="nv">1.2</span><span class="p p-Indicator">,</span><span class="nt"> i</span><span class="p">:</span><span class="w"> </span><span class="nv">0.0</span><span class="p p-Indicator">,</span><span class="nt"> d</span><span class="p">:</span><span class="w"> </span><span class="nv">0.1</span><span class="p p-Indicator">,</span><span class="nt"> i_clamp</span><span class="p">:</span><span class="w"> </span><span class="nv">0.0</span><span class="p p-Indicator">}</span>
+<span class="w">      </span><span class="nt">F2M2</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">p</span><span class="p">:</span><span class="w"> </span><span class="nv">1.2</span><span class="p p-Indicator">,</span><span class="nt"> i</span><span class="p">:</span><span class="w"> </span><span class="nv">0.0</span><span class="p p-Indicator">,</span><span class="nt"> d</span><span class="p">:</span><span class="w"> </span><span class="nv">0.1</span><span class="p p-Indicator">,</span><span class="nt"> i_clamp</span><span class="p">:</span><span class="w"> </span><span class="nv">0.0</span><span class="p p-Indicator">}</span>
+<span class="w">      </span><span class="nt">F2M3</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">p</span><span class="p">:</span><span class="w"> </span><span class="nv">1.2</span><span class="p p-Indicator">,</span><span class="nt"> i</span><span class="p">:</span><span class="w"> </span><span class="nv">0.0</span><span class="p p-Indicator">,</span><span class="nt"> d</span><span class="p">:</span><span class="w"> </span><span class="nv">0.1</span><span class="p p-Indicator">,</span><span class="nt"> i_clamp</span><span class="p">:</span><span class="w"> </span><span class="nv">0.0</span><span class="p p-Indicator">}</span>
+<span class="w">      </span><span class="nt">F2M4</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">p</span><span class="p">:</span><span class="w"> </span><span class="nv">1.2</span><span class="p p-Indicator">,</span><span class="nt"> i</span><span class="p">:</span><span class="w"> </span><span class="nv">0.0</span><span class="p p-Indicator">,</span><span class="nt"> d</span><span class="p">:</span><span class="w"> </span><span class="nv">0.1</span><span class="p p-Indicator">,</span><span class="nt"> i_clamp</span><span class="p">:</span><span class="w"> </span><span class="nv">0.0</span><span class="p p-Indicator">}</span>
+<span class="w">      </span><span class="nt">F3M1</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">p</span><span class="p">:</span><span class="w"> </span><span class="nv">1.2</span><span class="p p-Indicator">,</span><span class="nt"> i</span><span class="p">:</span><span class="w"> </span><span class="nv">0.0</span><span class="p p-Indicator">,</span><span class="nt"> d</span><span class="p">:</span><span class="w"> </span><span class="nv">0.1</span><span class="p p-Indicator">,</span><span class="nt"> i_clamp</span><span class="p">:</span><span class="w"> </span><span class="nv">0.0</span><span class="p p-Indicator">}</span>
+<span class="w">      </span><span class="nt">F3M2</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">p</span><span class="p">:</span><span class="w"> </span><span class="nv">1.2</span><span class="p p-Indicator">,</span><span class="nt"> i</span><span class="p">:</span><span class="w"> </span><span class="nv">0.0</span><span class="p p-Indicator">,</span><span class="nt"> d</span><span class="p">:</span><span class="w"> </span><span class="nv">0.1</span><span class="p p-Indicator">,</span><span class="nt"> i_clamp</span><span class="p">:</span><span class="w"> </span><span class="nv">0.0</span><span class="p p-Indicator">}</span>
+<span class="w">      </span><span class="nt">F3M3</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">p</span><span class="p">:</span><span class="w"> </span><span class="nv">1.2</span><span class="p p-Indicator">,</span><span class="nt"> i</span><span class="p">:</span><span class="w"> </span><span class="nv">0.0</span><span class="p p-Indicator">,</span><span class="nt"> d</span><span class="p">:</span><span class="w"> </span><span class="nv">0.1</span><span class="p p-Indicator">,</span><span class="nt"> i_clamp</span><span class="p">:</span><span class="w"> </span><span class="nv">0.0</span><span class="p p-Indicator">}</span>
+<span class="w">      </span><span class="nt">F3M4</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">p</span><span class="p">:</span><span class="w"> </span><span class="nv">1.2</span><span class="p p-Indicator">,</span><span class="nt"> i</span><span class="p">:</span><span class="w"> </span><span class="nv">0.0</span><span class="p p-Indicator">,</span><span class="nt"> d</span><span class="p">:</span><span class="w"> </span><span class="nv">0.1</span><span class="p p-Indicator">,</span><span class="nt"> i_clamp</span><span class="p">:</span><span class="w"> </span><span class="nv">0.0</span><span class="p p-Indicator">}</span>
+
+<span class="w">    </span><span class="nt">allow_partial_joints_goal</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+<span class="w">    </span><span class="nt">joints</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">F1M1</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">F1M2</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">F1M3</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">F1M4</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">F2M1</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">F2M2</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">F2M3</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">F2M4</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">F3M1</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">F3M2</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">F3M3</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">F3M4</span>
+<span class="w">    </span><span class="nt">command_interfaces</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">effort</span>
+<span class="w">    </span><span class="nt">state_interfaces</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">position</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">velocity</span>
+
+<span class="nt">joint_state_broadcaster</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">ros__parameters</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">update_rate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">500</span>
+<span class="w">    </span><span class="nt">joints</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">F1M1</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">F1M2</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">F1M3</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">F1M4</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">F2M1</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">F2M2</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">F2M3</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">F2M4</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">F3M1</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">F3M2</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">F3M3</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">F3M4</span>
+</pre></div>
+</div>
+</section>
+<section id="explanation">
+<h2>Explanation<a class="headerlink" href="#explanation" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>`update_rate`</strong>: Sets the rate at which joint states are published (500 Hz for high-frequency updates).</p></li>
+<li><p><strong>Gains</strong>: Proportional (P), Integral (I), and Derivative (D) values for precise control of each joint.</p></li>
+<li><p><strong>`allow_partial_joints_goal`</strong>: Allows for setting goals for a subset of joints.</p></li>
+<li><p><strong>Interfaces</strong>:</p>
+<ul>
+<li><p><strong>Command Interfaces</strong>: Effort-based input.</p></li>
+<li><p><strong>State Interfaces</strong>: Position and velocity.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="how-to-use">
+<h2>How to Use<a class="headerlink" href="#how-to-use" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p>Copy the above YAML configuration into your <cite>ros2_control</cite> configuration file.</p></li>
+<li><p>Launch the <cite>controller_manager</cite> in your ROS2 system.</p></li>
+<li><p>Use effort-based commands to control the gripper.</p></li>
+</ol>
+<p>For any additional help or suggestions, feel free to reach out to the maintainers or post on our community forums.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="rqt_dg3f_publisher.html" class="btn btn-neutral float-left" title="RQT DG3F Publisher" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="delto_5f.html" class="btn btn-neutral float-right" title="&lt;no title&gt;" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, TESOLLO.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

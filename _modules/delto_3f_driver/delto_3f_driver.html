@@ -1,0 +1,926 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>delto_3f_driver.delto_3f_driver &mdash; DELTO ROS2 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            DELTO ROS2
+              <img src="../../_static/tesollo-ros.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../delto_2f.html">Delto Gripper-2F</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../delto_3f.html">Delto Gripper-3F</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../delto_5f_introduce.html">Delto Gripper-5F</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">DELTO ROS2</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">delto_3f_driver.delto_3f_driver</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for delto_3f_driver.delto_3f_driver</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Delto 3F Gripper ROS2 Driver</span>
+<span class="sd">============================</span>
+
+<span class="sd">This module provides a ROS2 node for controlling the Delto 3F gripper. It communicates</span>
+<span class="sd">with the actual hardware via Modbus TCP and offers various messages and actions</span>
+<span class="sd">to control and monitor the gripper.</span>
+
+<span class="sd">Key features:</span>
+
+<span class="sd">- Read the current joint angles of the gripper</span>
+
+<span class="sd">- Set target joint angles</span>
+
+<span class="sd">- Save/load gripper poses to/from internal memory</span>
+
+<span class="sd">- Execute a grasp command and switch between different grasp modes</span>
+
+<span class="sd">- Update and retrieve P/D gains</span>
+
+<span class="sd">- Provide a FollowJointTrajectory action server</span>
+
+<span class="sd">Example:</span>
+
+<span class="sd">    Below is a basic example of how to run this node via the ``main()`` function:</span>
+
+<span class="sd">    .. code-block:: console</span>
+
+<span class="sd">        $ ros2 run delto_3f_driver delto_3f_driver</span>
+
+<span class="sd">Note:</span>
+<span class="sd">    This node depends on ROS2 parameters (`ip`, `port`, `slaveID`, `dummy`).  </span>
+<span class="sd">    In a typical setup, these parameters would be injected via a launch file.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">rclpy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rclpy.action</span><span class="w"> </span><span class="kn">import</span> <span class="n">ActionServer</span><span class="p">,</span> <span class="n">CancelResponse</span><span class="p">,</span> <span class="n">GoalResponse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rclpy.duration</span><span class="w"> </span><span class="kn">import</span> <span class="n">Duration</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">rclpy.node</span><span class="w"> </span><span class="kn">import</span> <span class="n">Node</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rclpy.executors</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiThreadedExecutor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rclpy.qos</span><span class="w"> </span><span class="kn">import</span> <span class="n">QoSProfile</span><span class="p">,</span> <span class="n">QoSReliabilityPolicy</span><span class="p">,</span> <span class="n">QoSHistoryPolicy</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">std_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">Int32</span><span class="p">,</span> <span class="n">Bool</span><span class="p">,</span> <span class="n">Float32MultiArray</span><span class="p">,</span> <span class="n">Int16MultiArray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sensor_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">JointState</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">trajectory_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">JointTrajectoryPoint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">control_msgs.action</span><span class="w"> </span><span class="kn">import</span> <span class="n">FollowJointTrajectory</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))))</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">delto_utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">delto_modbus_TCP</span> <span class="k">as</span> <span class="n">delto_TCP</span>
+
+
+<div class="viewcode-block" id="DeltoROSDriver">
+<a class="viewcode-back" href="../../delto_3f_driver.html#delto_3f_driver.delto_3f_driver.DeltoROSDriver">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DeltoROSDriver</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A ROS2 node class for controlling the Delto 3F gripper.</span>
+
+<span class="sd">    This class inherits from the ROS2 Node and provides the following key attributes:</span>
+
+<span class="sd">    :ivar joint_state_list: List of waypoints (desired JointTrajectory points).</span>
+<span class="sd">    :vartype joint_state_list: list[float]</span>
+
+<span class="sd">    :ivar current_joint_state: Current joint angles of the gripper (in radians).</span>
+<span class="sd">    :vartype current_joint_state: list[float]</span>
+
+<span class="sd">    :ivar target_joint_state: Target gripper joint angles (in radians).</span>
+<span class="sd">    :vartype target_joint_state: list[float]</span>
+
+<span class="sd">    :ivar fixed_joint_state: Fixed joint values (e.g. for locking certain joints).</span>
+<span class="sd">    :vartype fixed_joint_state: list[int]</span>
+
+<span class="sd">    :ivar joint_state_feedback: A JointTrajectoryPoint object used for action feedback.</span>
+<span class="sd">    :vartype joint_state_feedback: JointTrajectoryPoint</span>
+
+<span class="sd">    :ivar vel: (Currently unused) A placeholder for velocity or speed-related parameters.</span>
+<span class="sd">    :vartype vel: list</span>
+
+<span class="sd">    :ivar delto_client: A Modbus TCP client for low-level communication with the gripper hardware.</span>
+<span class="sd">    :vartype delto_client: delto_TCP.Communication</span>
+
+<span class="sd">    :ivar stop_thread: A boolean flag to stop the waypoint moving thread.</span>
+<span class="sd">    :vartype stop_thread: bool</span>
+
+<span class="sd">    :ivar lock: A threading lock for resource synchronization in multi-threaded environments.</span>
+<span class="sd">    :vartype lock: threading.Lock</span>
+
+<span class="sd">    :ivar is_connected: A flag indicating whether the gripper is successfully connected.</span>
+<span class="sd">    :vartype is_connected: bool</span>
+
+<span class="sd">    :ivar publish_rate: Frequency (Hz) at which JointState messages are published.</span>
+<span class="sd">    :vartype publish_rate: int</span>
+
+<span class="sd">    :ivar is_dummy: Whether to operate in a dummy (simulation) mode instead of real hardware.</span>
+<span class="sd">    :vartype is_dummy: bool</span>
+
+<span class="sd">    :ivar jcm_action_server: FollowJointTrajectory action server.</span>
+<span class="sd">    :vartype jcm_action_server: ActionServer</span>
+
+<span class="sd">    :ivar joint_state_pub: Publisher for JointState messages.</span>
+<span class="sd">    :vartype joint_state_pub: Publisher</span>
+
+<span class="sd">    :ivar grasp_sub: Subscription to Bool topic (to trigger grasp operation).</span>
+<span class="sd">    :vartype grasp_sub: Subscription</span>
+
+<span class="sd">    :ivar write_register_sub: Subscription to Int16MultiArray topic (to write directly to registers).</span>
+<span class="sd">    :vartype write_register_sub: Subscription</span>
+
+<span class="sd">    :ivar grasp_mode_sub: Subscription to Int32 topic (to set a grasp mode).</span>
+<span class="sd">    :vartype grasp_mode_sub: Subscription</span>
+
+<span class="sd">    :ivar target_joint_sub: Subscription to Float32MultiArray topic (to set target joint angles).</span>
+<span class="sd">    :vartype target_joint_sub: Subscription</span>
+
+<span class="sd">    :ivar joint_state_timer: Timer for JointState publishing.</span>
+<span class="sd">    :vartype joint_state_timer: Timer</span>
+
+<span class="sd">    :ivar read_joint_timer: Timer for reading current joint angles.</span>
+<span class="sd">    :vartype read_joint_timer: Timer</span>
+
+<span class="sd">    :ivar fixed_joint_sub: Subscription to Int16MultiArray topic (to lock particular joints).</span>
+<span class="sd">    :vartype fixed_joint_sub: Subscription</span>
+
+<span class="sd">    :ivar set_gain_sub: Subscription to Int16MultiArray topic (to set P/D gains).</span>
+<span class="sd">    :vartype set_gain_sub: Subscription</span>
+
+<span class="sd">    :ivar gain_pub: Publisher for Int16MultiArray topic (to respond with current P/D gains).</span>
+<span class="sd">    :vartype gain_pub: Publisher</span>
+
+<span class="sd">    :ivar load_pose_sub: Subscription to Int32 topic (to load a pose from internal storage).</span>
+<span class="sd">    :vartype load_pose_sub: Subscription</span>
+
+<span class="sd">    :ivar save_pose_sub: Subscription to Int32 topic (to save a pose to internal storage).</span>
+<span class="sd">    :vartype save_pose_sub: Subscription</span>
+
+<span class="sd">    :ivar reconnect_timer: Timer to periodically attempt reconnection when the connection is lost.</span>
+<span class="sd">    :vartype reconnect_timer: Timer</span>
+
+<span class="sd">    :ivar reconnect_attempts: Count of how many times reconnection has been attempted.</span>
+<span class="sd">    :vartype reconnect_attempts: int</span>
+
+<span class="sd">    :ivar max_reconnect_attempts: Maximum number of reconnection attempts before giving up.</span>
+<span class="sd">    :vartype max_reconnect_attempts: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the node, sets up ROS2 publishers/subscribers/action servers,</span>
+<span class="sd">        and prepares the Modbus TCP client to communicate with the gripper hardware.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;delto_3f_driver&#39;</span><span class="p">)</span>
+        <span class="n">qos_profile</span> <span class="o">=</span> <span class="n">QoSProfile</span><span class="p">(</span>
+            <span class="n">depth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">reliability</span><span class="o">=</span><span class="n">QoSReliabilityPolicy</span><span class="o">.</span><span class="n">RELIABLE</span>
+        <span class="p">)</span>
+
+        <span class="n">fast_qos</span> <span class="o">=</span> <span class="n">QoSProfile</span><span class="p">(</span>
+            <span class="n">reliability</span><span class="o">=</span><span class="n">QoSReliabilityPolicy</span><span class="o">.</span><span class="n">RELIABLE</span><span class="p">,</span>
+            <span class="n">depth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">lifespan</span><span class="o">=</span><span class="n">Duration</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">history</span><span class="o">=</span><span class="n">QoSHistoryPolicy</span><span class="o">.</span><span class="n">KEEP_LAST</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">declare_parameter</span><span class="p">(</span><span class="s1">&#39;ip&#39;</span><span class="p">,</span> <span class="s2">&quot;169.254.186.62&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">declare_parameter</span><span class="p">(</span><span class="s1">&#39;port&#39;</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">declare_parameter</span><span class="p">(</span><span class="s1">&#39;slaveID&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">declare_parameter</span><span class="p">(</span><span class="s1">&#39;dummy&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">joint_state_list</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span><span class="o">*</span><span class="mi">12</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_joint_state</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span><span class="o">*</span><span class="mi">12</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_joint_state</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span><span class="o">*</span><span class="mi">12</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fixed_joint_state</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">12</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">joint_state_feedback</span> <span class="o">=</span> <span class="n">JointTrajectoryPoint</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vel</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delto_client</span> <span class="o">=</span> <span class="n">delto_TCP</span><span class="o">.</span><span class="n">Communication</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_thread</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span> <span class="o">=</span> <span class="kc">False</span>
+        
+        <span class="c1"># A very high publish rate may cause issues in sub/pub, set to a safe default</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">publish_rate</span> <span class="o">=</span> <span class="mi">100</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;publish rate : &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">publish_rate</span><span class="p">))</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_dummy</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># bool(self.get_parameter(&#39;dummy&#39;).value)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># Action Server Setup</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">jcm_action_server</span> <span class="o">=</span> <span class="n">ActionServer</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">FollowJointTrajectory</span><span class="p">,</span>
+            <span class="s1">&#39;delto_controller/follow_joint_trajectory&#39;</span><span class="p">,</span>
+            <span class="n">execute_callback</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">execute_callback</span><span class="p">,</span>
+            <span class="n">goal_callback</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">goal_callback</span><span class="p">,</span>
+            <span class="n">cancel_callback</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cancel_callback</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Publishers &amp; Subscriptions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">joint_state_pub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_publisher</span><span class="p">(</span>
+            <span class="n">JointState</span><span class="p">,</span> <span class="s1">&#39;gripper/joint_states&#39;</span><span class="p">,</span> <span class="n">fast_qos</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grasp_sub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_subscription</span><span class="p">(</span>
+            <span class="n">Bool</span><span class="p">,</span> <span class="s1">&#39;gripper/grasp&#39;</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">grasp_callback</span><span class="p">,</span> <span class="n">qos_profile</span><span class="o">=</span><span class="n">qos_profile</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_register_sub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_subscription</span><span class="p">(</span>
+            <span class="n">Int16MultiArray</span><span class="p">,</span> <span class="s1">&#39;gripper/write_register&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">write_register_callback</span><span class="p">,</span> <span class="n">qos_profile</span><span class="o">=</span><span class="n">qos_profile</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grasp_mode_sub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_subscription</span><span class="p">(</span>
+            <span class="n">Int32</span><span class="p">,</span> <span class="s1">&#39;gripper/grasp_mode&#39;</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">grasp_mode_callback</span><span class="p">,</span> <span class="n">qos_profile</span><span class="o">=</span><span class="n">qos_profile</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_joint_sub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_subscription</span><span class="p">(</span>
+            <span class="n">Float32MultiArray</span><span class="p">,</span> <span class="s1">&#39;gripper/target_joint&#39;</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target_joint_callback</span><span class="p">,</span> <span class="n">qos_profile</span><span class="o">=</span><span class="n">qos_profile</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">joint_state_timer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_timer</span><span class="p">(</span>
+            <span class="mi">1</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">publish_rate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">timer_callback</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_joint_timer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_timer</span><span class="p">(</span>
+            <span class="mi">1</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">publish_rate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_joint_callback</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fixed_joint_sub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_subscription</span><span class="p">(</span>
+            <span class="n">Int16MultiArray</span><span class="p">,</span> <span class="s1">&#39;gripper/fixed_joint&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fixed_joint_callback</span><span class="p">,</span> <span class="n">qos_profile</span><span class="o">=</span><span class="n">qos_profile</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_gain_sub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_subscription</span><span class="p">(</span>
+            <span class="n">Int16MultiArray</span><span class="p">,</span> <span class="s1">&#39;gripper/request/gain&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_gain_callback</span><span class="p">,</span> <span class="n">qos_profile</span><span class="o">=</span><span class="n">qos_profile</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gain_pub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_publisher</span><span class="p">(</span>
+            <span class="n">Int16MultiArray</span><span class="p">,</span> <span class="s1">&#39;gripper/response/gain&#39;</span><span class="p">,</span> <span class="n">qos_profile</span><span class="o">=</span><span class="n">qos_profile</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_pose_sub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_subscription</span><span class="p">(</span>
+            <span class="n">Int32</span><span class="p">,</span> <span class="s1">&#39;gripper/load_pose&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_pose_callback</span><span class="p">,</span> <span class="n">qos_profile</span><span class="o">=</span><span class="n">qos_profile</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_pose_sub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_subscription</span><span class="p">(</span>
+            <span class="n">Int32</span><span class="p">,</span> <span class="s1">&#39;gripper/save_pose&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_pose_callback</span><span class="p">,</span> <span class="n">qos_profile</span><span class="o">=</span><span class="n">qos_profile</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reconnect_timer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_timer</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reconnect_callback</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reconnect_attempts</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_reconnect_attempts</span> <span class="o">=</span> <span class="mi">100</span>
+
+<div class="viewcode-block" id="DeltoROSDriver.load_pose_callback">
+<a class="viewcode-back" href="../../delto_3f_driver.html#delto_3f_driver.delto_3f_driver.DeltoROSDriver.load_pose_callback">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_pose_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads a stored gripper pose (index range: 1~30) from internal EEPROM.</span>
+
+<span class="sd">        :param msg: The pose index to be loaded</span>
+<span class="sd">        :type msg: Int32</span>
+<span class="sd">        :raises: Logs an error if the index is out of valid range (1~30).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">data</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">msg</span><span class="o">.</span><span class="n">data</span> <span class="o">&gt;</span> <span class="mi">30</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Pose index out of range&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delto_client</span><span class="o">.</span><span class="n">load_pose</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
+
+        
+<div class="viewcode-block" id="DeltoROSDriver.save_pose_callback">
+<a class="viewcode-back" href="../../delto_3f_driver.html#delto_3f_driver.delto_3f_driver.DeltoROSDriver.save_pose_callback">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_pose_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Saves the current gripper pose to a specified index (range: 1~30) in the internal EEPROM.</span>
+
+<span class="sd">        :param msg: The pose index to save to</span>
+<span class="sd">        :type msg: Int32</span>
+<span class="sd">        :raises: Logs an error if the index is out of valid range (1~30).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">data</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">msg</span><span class="o">.</span><span class="n">data</span> <span class="o">&gt;</span> <span class="mi">30</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Pose index out of range&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">delto_client</span><span class="o">.</span><span class="n">save_pose</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
+
+        
+<div class="viewcode-block" id="DeltoROSDriver.reconnect_callback">
+<a class="viewcode-back" href="../../delto_3f_driver.html#delto_3f_driver.delto_3f_driver.DeltoROSDriver.reconnect_callback">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reconnect_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A periodic callback that attempts to reconnect to the gripper if the connection is lost.</span>
+<span class="sd">        If :attr:`reconnect_attempts` exceeds :attr:`max_reconnect_attempts`, the node is shut down.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reconnect_attempts</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_reconnect_attempts</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Attempting to reconnect (attempt </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">reconnect_attempts</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_reconnect_attempts</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+                
+                <span class="k">try</span><span class="p">:</span> 
+                    <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">reconnect_attempts</span> <span class="o">+=</span> <span class="mi">1</span>
+                    
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Reconnected successfully&quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">reconnect_attempts</span> <span class="o">=</span> <span class="mi">0</span>
+                        
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to reconnect: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">reconnect_attempts</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Maximum reconnect attempts reached. Shutting down.&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">destroy_node</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reconnect_attempts</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="DeltoROSDriver.set_gain_callback">
+<a class="viewcode-back" href="../../delto_3f_driver.html#delto_3f_driver.delto_3f_driver.DeltoROSDriver.set_gain_callback">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_gain_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Callback function to set P/D gains.  </span>
+<span class="sd">        The ``msg.data`` is expected to have 24 elements, the first 12 for P gains, and the next 12 for D gains.</span>
+
+<span class="sd">        :param msg: Int16MultiArray with 24 elements (12 for P, 12 for D)</span>
+<span class="sd">        :type msg: Int16MultiArray</span>
+<span class="sd">        :raises: Logs an error if the array size is not 24.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">24</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid gain array size: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">delto_client</span><span class="o">.</span><span class="n">set_pgain</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">12</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delto_client</span><span class="o">.</span><span class="n">set_dgain</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">12</span><span class="p">:</span><span class="mi">24</span><span class="p">])</span>
+        <span class="n">pgain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">delto_client</span><span class="o">.</span><span class="n">get_pgain</span><span class="p">()</span>
+        <span class="n">dgain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">delto_client</span><span class="o">.</span><span class="n">get_dgain</span><span class="p">()</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">pgain</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">dgain</span><span class="p">)</span>
+        
+        <span class="n">gain_msg</span> <span class="o">=</span> <span class="n">Int16MultiArray</span><span class="p">()</span>
+        <span class="n">gain_msg</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gain_pub</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">gain_msg</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DeltoROSDriver.connect">
+<a class="viewcode-back" href="../../delto_3f_driver.html#delto_3f_driver.delto_3f_driver.DeltoROSDriver.connect">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Attempts to connect to the Delto gripper.  </span>
+<span class="sd">        Internally calls ``self.delto_client.connect()``. If successful, </span>
+<span class="sd">        :attr:`is_connected` is set to True.</span>
+
+<span class="sd">        :return: True if the connection succeeds, False otherwise.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_dummy</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Dummy mode&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Connecting to the delto gripper...&quot;</span><span class="p">)</span>
+        <span class="n">is_connected</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">delto_client</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_parameter</span><span class="p">(</span><span class="s1">&#39;ip&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_parameter</span><span class="p">(</span><span class="s1">&#39;port&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_parameter</span><span class="p">(</span><span class="s1">&#39;slaveID&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span> <span class="o">=</span> <span class="n">is_connected</span>
+        <span class="k">return</span> <span class="n">is_connected</span></div>
+
+
+<div class="viewcode-block" id="DeltoROSDriver.read_joint_callback">
+<a class="viewcode-back" href="../../delto_3f_driver.html#delto_3f_driver.delto_3f_driver.DeltoROSDriver.read_joint_callback">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_joint_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads the current joint angles of the gripper (in degrees) and updates</span>
+<span class="sd">        :attr:`current_joint_state` (in radians).</span>
+
+<span class="sd">        If the connection is lost or an exception occurs, logs an error and sets</span>
+<span class="sd">        :attr:`is_connected` to False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reconnect_attempts</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">position_tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_position</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_joint_state</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_deg2rad</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">position_tmp</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to read joint state: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="DeltoROSDriver.write_register_callback">
+<a class="viewcode-back" href="../../delto_3f_driver.html#delto_3f_driver.delto_3f_driver.DeltoROSDriver.write_register_callback">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_register_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A callback function to write data directly to specific registers of the module.</span>
+<span class="sd">        For instance, the Int16MultiArray might be structured as </span>
+<span class="sd">        (start_register_address, data1, data2, ...).</span>
+
+<span class="sd">        :param msg: The first element is the register address, the subsequent elements are the actual data.</span>
+<span class="sd">        :type msg: Int16MultiArray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Connection lost&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delto_client</span><span class="o">.</span><span class="n">write_registers</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to write register: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="DeltoROSDriver.joint_state_publisher">
+<a class="viewcode-back" href="../../delto_3f_driver.html#delto_3f_driver.delto_3f_driver.DeltoROSDriver.joint_state_publisher">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">joint_state_publisher</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Publishes a JointState message using :attr:`current_joint_state`.  </span>
+<span class="sd">        Also updates :attr:`joint_state_feedback` for action feedback purposes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">joint_state_msg</span> <span class="o">=</span> <span class="n">JointState</span><span class="p">()</span>
+        <span class="n">joint_state_msg</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">stamp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_clock</span><span class="p">()</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">to_msg</span><span class="p">()</span>
+
+        <span class="c1"># Example 12 joint names</span>
+        <span class="n">joint_state_msg</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;F1M1&#39;</span><span class="p">,</span> <span class="s1">&#39;F1M2&#39;</span><span class="p">,</span> <span class="s1">&#39;F1M3&#39;</span><span class="p">,</span> <span class="s1">&#39;F1M4&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;F2M1&#39;</span><span class="p">,</span> <span class="s1">&#39;F2M2&#39;</span><span class="p">,</span> <span class="s1">&#39;F2M3&#39;</span><span class="p">,</span> <span class="s1">&#39;F2M4&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;F3M1&#39;</span><span class="p">,</span> <span class="s1">&#39;F3M2&#39;</span><span class="p">,</span> <span class="s1">&#39;F3M3&#39;</span><span class="p">,</span> <span class="s1">&#39;F3M4&#39;</span>
+        <span class="p">]</span>
+
+        <span class="n">joint_state_msg</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_joint_state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">joint_state_feedback</span><span class="o">.</span><span class="n">positions</span> <span class="o">=</span> <span class="n">joint_state_msg</span><span class="o">.</span><span class="n">position</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">joint_state_pub</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">joint_state_msg</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DeltoROSDriver.get_position">
+<a class="viewcode-back" href="../../delto_3f_driver.html#delto_3f_driver.delto_3f_driver.DeltoROSDriver.get_position">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_position</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the current joint angles (in degrees) from the gripper.</span>
+
+<span class="sd">        :return: A list of current joint angles in degrees.</span>
+<span class="sd">        :rtype: list[float]</span>
+<span class="sd">        :raises: Logs an error if the connection is lost.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_dummy</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_joint_state</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;(get_position) Connection lost&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">delto_client</span><span class="o">.</span><span class="n">get_position</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="DeltoROSDriver.set_position">
+<a class="viewcode-back" href="../../delto_3f_driver.html#delto_3f_driver.delto_3f_driver.DeltoROSDriver.set_position">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sends a command to move the gripper to the specified angles (in degrees).</span>
+
+<span class="sd">        :param position: Desired joint angles in degrees</span>
+<span class="sd">        :type position: list[float]</span>
+<span class="sd">        :raises: Logs an error if the connection is lost or failed to set position.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_dummy</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_joint_state</span> <span class="o">=</span> <span class="n">position</span>
+            <span class="k">return</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Connection lost&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delto_client</span><span class="o">.</span><span class="n">set_position</span><span class="p">(</span><span class="n">position</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(set_position) Failed to set position: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="DeltoROSDriver.set_motion_step">
+<a class="viewcode-back" href="../../delto_3f_driver.html#delto_3f_driver.delto_3f_driver.DeltoROSDriver.set_motion_step">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_motion_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the motion step (i.e., a step size or movement resolution).</span>
+
+<span class="sd">        :param step: An integer specifying the step size.</span>
+<span class="sd">        :type step: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_dummy</span><span class="p">:</span>
+            <span class="k">return</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Connection lost&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delto_client</span><span class="o">.</span><span class="n">set_step</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to set motion step: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="DeltoROSDriver.grasp_mode_callback">
+<a class="viewcode-back" href="../../delto_3f_driver.html#delto_3f_driver.delto_3f_driver.DeltoROSDriver.grasp_mode_callback">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">grasp_mode_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Int32</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Callback function to set the gripper&#39;s grasp mode.</span>
+
+<span class="sd">        :param mode: The desired grasp mode (e.g., PINCH, WIDE, etc., depending on implementation).</span>
+<span class="sd">        :type mode: Int32</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Connection lost&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delto_client</span><span class="o">.</span><span class="n">grasp_mode</span><span class="p">(</span><span class="n">mode</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to set grasp mode: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="DeltoROSDriver.grasp_callback">
+<a class="viewcode-back" href="../../delto_3f_driver.html#delto_3f_driver.delto_3f_driver.DeltoROSDriver.grasp_callback">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">grasp_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grasp</span><span class="p">:</span> <span class="n">Bool</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Callback function to execute a grasp operation.  </span>
+<span class="sd">        If True, the gripper will close; if False, it will open.</span>
+
+<span class="sd">        :param grasp: Whether to close (True) or open (False) the gripper.</span>
+<span class="sd">        :type grasp: Bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Connection lost&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delto_client</span><span class="o">.</span><span class="n">grasp</span><span class="p">(</span><span class="n">grasp</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to grasp: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="DeltoROSDriver.timer_callback">
+<a class="viewcode-back" href="../../delto_3f_driver.html#delto_3f_driver.delto_3f_driver.DeltoROSDriver.timer_callback">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">timer_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Periodic timer callback. If the connection is active, </span>
+<span class="sd">        publishes :meth:`joint_state_publisher`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">reconnect_attempts</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Connection lost&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">joint_state_publisher</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="DeltoROSDriver.goal_callback">
+<a class="viewcode-back" href="../../delto_3f_driver.html#delto_3f_driver.delto_3f_driver.DeltoROSDriver.goal_callback">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">goal_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">goal_request</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Callback for receiving a goal request in the FollowJointTrajectory action server.</span>
+
+<span class="sd">        :param goal_request: The incoming goal request.</span>
+<span class="sd">        :type goal_request: FollowJointTrajectory.GoalRequest</span>
+<span class="sd">        :return: GoalResponse.ACCEPT</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Received goal&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">GoalResponse</span><span class="o">.</span><span class="n">ACCEPT</span></div>
+
+
+<div class="viewcode-block" id="DeltoROSDriver.cancel_callback">
+<a class="viewcode-back" href="../../delto_3f_driver.html#delto_3f_driver.delto_3f_driver.DeltoROSDriver.cancel_callback">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cancel_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">goal_handle</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Callback for receiving a cancel request in the FollowJointTrajectory action server.</span>
+
+<span class="sd">        :param goal_handle: The goal handle to be canceled.</span>
+<span class="sd">        :type goal_handle: ServerGoalHandle</span>
+<span class="sd">        :return: CancelResponse.ACCEPT</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Received cancel&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">CancelResponse</span><span class="o">.</span><span class="n">ACCEPT</span></div>
+
+
+<div class="viewcode-block" id="DeltoROSDriver.execute_callback">
+<a class="viewcode-back" href="../../delto_3f_driver.html#delto_3f_driver.delto_3f_driver.DeltoROSDriver.execute_callback">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">execute_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">goal_handle</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Executes the trajectory received via the FollowJointTrajectory action server.</span>
+
+<span class="sd">        :param goal_handle: Goal handle containing the trajectory.</span>
+<span class="sd">        :type goal_handle: ServerGoalHandle</span>
+<span class="sd">        :return: A result object indicating success/failure.</span>
+<span class="sd">        :rtype: FollowJointTrajectory.Result</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;FollowJointTrajectory callback...&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">goal_handle</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">trajectory</span><span class="p">)</span>
+        <span class="n">goal</span> <span class="o">=</span> <span class="n">goal_handle</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">joint_state_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">goal</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">joint_state_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">positions</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">goal</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stop_motion</span><span class="p">()</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">joint_state_list</span><span class="p">:</span>
+            <span class="n">new_array</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">joint_state_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="n">middle_point</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">joint_state_list</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">joint_state_list</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)]</span>
+            <span class="n">new_array</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">middle_point</span><span class="p">)</span>
+            <span class="n">new_array</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">joint_state_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_motion_step</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">new_array</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">_rad2deg</span><span class="p">(</span><span class="n">joints</span><span class="p">)</span> <span class="k">for</span> <span class="n">joints</span> <span class="ow">in</span> <span class="n">subset</span><span class="p">]</span>
+                         <span class="k">for</span> <span class="n">subset</span> <span class="ow">in</span> <span class="n">new_array</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_waypointMove</span><span class="p">(</span><span class="n">new_array</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+
+            <span class="n">result</span> <span class="o">=</span> <span class="n">FollowJointTrajectory</span><span class="o">.</span><span class="n">Result</span><span class="p">()</span>
+            <span class="n">feedback_msg</span> <span class="o">=</span> <span class="n">FollowJointTrajectory</span><span class="o">.</span><span class="n">Feedback</span><span class="p">()</span>
+
+            <span class="n">feedback_msg</span><span class="o">.</span><span class="n">desired</span><span class="o">.</span><span class="n">positions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">joint_state_feedback</span><span class="o">.</span><span class="n">positions</span>
+            <span class="n">feedback_msg</span><span class="o">.</span><span class="n">actual</span><span class="o">.</span><span class="n">positions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">joint_state_feedback</span><span class="o">.</span><span class="n">positions</span>
+            <span class="n">goal_handle</span><span class="o">.</span><span class="n">publish_feedback</span><span class="p">(</span><span class="n">feedback_msg</span><span class="p">)</span>
+
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
+
+        <span class="n">goal_handle</span><span class="o">.</span><span class="n">succeed</span><span class="p">()</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">error_code</span> <span class="o">=</span> <span class="n">FollowJointTrajectory</span><span class="o">.</span><span class="n">Result</span><span class="o">.</span><span class="n">SUCCESSFUL</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;success&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="DeltoROSDriver.target_joint_callback">
+<a class="viewcode-back" href="../../delto_3f_driver.html#delto_3f_driver.delto_3f_driver.DeltoROSDriver.target_joint_callback">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">target_joint_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Callback for receiving the target joint angles (in radians)</span>
+<span class="sd">        via a Float32MultiArray with 12 elements.</span>
+
+<span class="sd">        :param msg: Contains 12 floats representing target joint angles in radians.</span>
+<span class="sd">        :type msg: Float32MultiArray</span>
+<span class="sd">        :raises: Logs an error if the message length is not 12.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">12</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Invalid target joint state&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Connection lost&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        
+        <span class="c1"># Convert rad -&gt; deg</span>
+        <span class="n">msg</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_rad2deg</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_joint_state</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">data</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delto_client</span><span class="o">.</span><span class="n">set_position</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_joint_state</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to set target joint state: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="DeltoROSDriver.fixed_joint_callback">
+<a class="viewcode-back" href="../../delto_3f_driver.html#delto_3f_driver.delto_3f_driver.DeltoROSDriver.fixed_joint_callback">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fixed_joint_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Callback for receiving fixed joint states (locking certain joints) </span>
+<span class="sd">        via an Int16MultiArray with 12 elements.</span>
+
+<span class="sd">        :param msg: Contains 12 integers specifying fixed joint values.</span>
+<span class="sd">        :type msg: Int16MultiArray</span>
+<span class="sd">        :raises: Logs an error if the message length is not 12.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">12</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Invalid fixed joint state&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+    
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Connection lost&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+    
+        <span class="bp">self</span><span class="o">.</span><span class="n">fixed_joint_state</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fixed_joint_state</span><span class="p">)</span>
+    
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delto_client</span><span class="o">.</span><span class="n">fix_position</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fixed_joint_state</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to set fixed joint state: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="DeltoROSDriver.waypointMove">
+<a class="viewcode-back" href="../../delto_3f_driver.html#delto_3f_driver.delto_3f_driver.DeltoROSDriver.waypointMove">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">waypointMove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waypointList</span><span class="p">,</span> <span class="n">threshold</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Spawns a separate thread that iterates over the list of waypoints, </span>
+<span class="sd">        moving the gripper to each waypoint in turn.</span>
+
+<span class="sd">        :param waypointList: A list of waypoints, where each waypoint is 12 joint angles in degrees.</span>
+<span class="sd">        :type waypointList: list[list[float]]</span>
+<span class="sd">        :param threshold: Threshold for considering a waypoint reached (fractional error tolerance).</span>
+<span class="sd">        :type threshold: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_thread</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">waypoint_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
+            <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_waypointMove</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">waypointList</span><span class="p">,</span> <span class="n">threshold</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">waypoint_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="DeltoROSDriver.stop_motion">
+<a class="viewcode-back" href="../../delto_3f_driver.html#delto_3f_driver.delto_3f_driver.DeltoROSDriver.stop_motion">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stop_motion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stops the current motion by setting the position to the current gripper pose,</span>
+<span class="sd">        effectively halting any ongoing trajectory motion.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Connection lost&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">delto_client</span><span class="o">.</span><span class="n">set_position</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">delto_client</span><span class="o">.</span><span class="n">get_position</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_thread</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_waypointMove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waypointList</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.3</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Internal method that iterates over the waypoint list. For each waypoint, </span>
+<span class="sd">        it waits until the gripper has converged within the threshold of the target </span>
+<span class="sd">        before moving on to the next waypoint.</span>
+
+<span class="sd">        :param waypointList: A list of waypoints (each containing 12 joint angles in degrees).</span>
+<span class="sd">        :type waypointList: list[list[float]]</span>
+<span class="sd">        :param threshold: Fractional error tolerance (e.g., 0.3)</span>
+<span class="sd">        :type threshold: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_thread</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">move_flag</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">first_input_flag</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="n">first_current_position</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span><span class="o">*</span><span class="mi">12</span>
+        <span class="n">current_position</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span><span class="o">*</span><span class="mi">12</span>
+
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_thread</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">move_flag</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">delto_client</span><span class="o">.</span><span class="n">set_position</span><span class="p">(</span><span class="n">waypointList</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">move_flag</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">first_input_flag</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="n">current_position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">delto_client</span><span class="o">.</span><span class="n">get_position</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">first_input_flag</span><span class="p">:</span>
+                <span class="n">first_current_position</span> <span class="o">=</span> <span class="n">current_position</span>
+                <span class="n">first_input_flag</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="n">error</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">current_position</span><span class="p">,</span> <span class="n">waypointList</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">first_current_position</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">c</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.0001</span><span class="p">:</span>
+                    <span class="n">error</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">error</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">abs</span><span class="p">((</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">c</span><span class="p">)))</span>
+
+            <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">e</span> <span class="o">&lt;</span> <span class="n">threshold</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">error</span><span class="p">):</span>
+                <span class="n">move_flag</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">waypointList</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">stop_thread</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">return</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_deg2rad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts an angle from degrees to radians.</span>
+
+<span class="sd">        :param deg: Angle in degrees</span>
+<span class="sd">        :type deg: float</span>
+<span class="sd">        :return: Angle in radians</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">deg</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_rad2deg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rad</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts an angle from radians to degrees.</span>
+
+<span class="sd">        :param rad: Angle in radians</span>
+<span class="sd">        :type rad: float</span>
+<span class="sd">        :return: Angle in degrees</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">rad</span> <span class="o">*</span> <span class="mf">180.0</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span></div>
+
+
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../../delto_3f_driver.html#delto_3f_driver.delto_3f_driver.main">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initializes and runs the node.  </span>
+<span class="sd">    Attempts to connect to the gripper hardware via :meth:`DeltoROSDriver.connect`, </span>
+<span class="sd">    then starts the ROS2 spinner.</span>
+
+<span class="sd">    :param args: Command-line arguments</span>
+<span class="sd">    :type args: list, optional</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rclpy</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="n">delto_driver</span> <span class="o">=</span> <span class="n">DeltoROSDriver</span><span class="p">()</span>
+    <span class="n">connect</span> <span class="o">=</span> <span class="n">delto_driver</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">connect</span><span class="p">:</span>
+        <span class="n">delto_driver</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Init network connection failed.&quot;</span><span class="p">)</span>
+
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+    <span class="n">delto_driver</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;delto_driver initialized&quot;</span><span class="p">)</span>
+
+    <span class="n">executor</span> <span class="o">=</span> <span class="n">MultiThreadedExecutor</span><span class="p">(</span><span class="n">num_threads</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+    <span class="n">executor</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">delto_driver</span><span class="p">)</span>
+    <span class="n">executor</span><span class="o">.</span><span class="n">spin</span><span class="p">()</span>
+    <span class="n">executor</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, TESOLLO.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
