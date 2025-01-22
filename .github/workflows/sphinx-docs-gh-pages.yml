@@ -1,4 +1,4 @@
-name: Build and Deploy Sphinx Docs (No Symlinks/Hardlinks, Check Size)
+name: Build and Deploy Sphinx Docs (Clean Links, Check Size)
 
 on:
   push:
@@ -16,10 +16,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # -------------------------
-      # 1) 저장소 체크아웃 & Python 설정
-      # -------------------------
-      - name: Checkout code
+      # 1) 저장소 체크아웃 & Python
+      - name: Checkout
         uses: actions/checkout@v3
 
       - name: Set up Python
@@ -32,97 +30,58 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r docs/requirements.txt
 
-      # -------------------------
       # 2) Sphinx 빌드
-      # -------------------------
-      - name: Build Sphinx documentation
-        run: |
-          sphinx-build -b html docs/source docs/build/html
+      - name: Build Sphinx docs
+        run: sphinx-build -b html docs/source docs/build/html
 
-      # -------------------------
-      # 3) symlink/hardlink 제거
-      # -------------------------
-      - name: Convert any links to normal files (cp -rL)
+      # 3) 링크 제거 (cp -rL) + 압축/해제
+      - name: Remove links & re-archive
         run: |
-          echo "[INFO] Removing symlinks/hardlinks..."
+          echo "[INFO] Removing symlinks/hardlinks with cp -rL..."
           mkdir -p docs/build/final
           cp -rL docs/build/html/* docs/build/final
-          rm -rf docs/build/html
-          mv docs/build/final docs/build/html
-          echo "[INFO] Link removal done."
-      - name: Convert links, excluding . and ..
-        run: |
-          echo "[INFO] Removing symlinks/hardlinks and excluding '.' and '..'..."
-          mkdir -p docs/build/final
-          shopt -s dotglob nullglob
-          for f in docs/build/html/* docs/build/html/.*; do
-            # '.' 혹은 '..'이면 무시
-            if [[ "$f" == *"/." || "$f" == *"/.." ]]; then
-              continue
-            fi
-            # 링크 따라 파일 복사
-            cp -rL "$f" docs/build/final/
-          done
-      
-          # 기존 html 폴더 삭제 후, 새 폴더로 교체
-          rm -rf docs/build/html
-          mv docs/build/final docs/build/html
-      
-          echo "[INFO] Done. Listing final output..."
-          find docs/build/html -ls
-          du -sh docs/build/html
-      - name: Tar and untar final directory
-        run: |
+
           echo "[INFO] Archiving final directory..."
           cd docs/build
-          tar -cf html.tar html
-      
-          echo "[INFO] Removing old html folder..."
-          rm -rf html
-      
-          echo "[INFO] Extracting tar to a fresh directory..."
+          tar -cf final.tar final
+
+          echo "[INFO] Remove old dirs..."
+          rm -rf html final
+
+          echo "[INFO] Extracting tar to a fresh html dir..."
           mkdir html
-          tar -xf html.tar -C html --strip-components=1
-      
+          tar -xf final.tar -C html --strip-components=1
+
           echo "[INFO] Done. Listing final output..."
           find html -ls
           du -sh html
 
-      # -------------------------
-      # 4) 디버그: symlink, 하드링크, 용량 확인
-      # -------------------------
-      - name: Debug file structure
+      # 4) 디버그
+      - name: Debug structure
         run: |
-          echo "=== Check for symlinks (should be none) ==="
+          echo "=== Check for symlinks ==="
           find docs/build/html -type l -exec ls -la {} \; || true
 
-          echo "=== Check for repeated inodes (possible hardlinks) ==="
+          echo "=== Check inodes ==="
           ls -aliR docs/build/html | sort | uniq -c | sort -nr | head -30
 
-          echo "=== Check total size of docs/build/html ==="
+          echo "=== Check size ==="
           du -sh docs/build/html
 
-      # (선택) Jekyll 무시 파일 생성: _static 등 '_' 디렉터리 무시 방지
+      # (선택) Jekyll 무시파일
       - name: Create .nojekyll
         run: echo > docs/build/html/.nojekyll
 
-      # -------------------------
       # 5) 아티팩트 업로드
-      # -------------------------
-      - name: Upload artifact (github-pages)
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: github-pages   # actions/deploy-pages@v4가 찾을 아티팩트 이름
+          name: github-pages
           path: docs/build/html
 
-  # -------------------------
-  # 배포 Job
-  # -------------------------
   deploy:
     needs: build
     runs-on: ubuntu-latest
-
     steps:
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
-        # 별도 입력값 없이, "github-pages" 아티팩트 자동 인식하여 배포
