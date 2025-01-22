@@ -3,13 +3,13 @@ name: Build and Deploy Docs
 on:
   push:
     branches:
-      - main  # 배포 브랜치
+      - main  # 배포를 위한 브랜치
   workflow_dispatch:  # 수동 실행 가능
 
 permissions:
   contents: read
   pages: write
-  id-token: write  # Pages 배포에 필요한 권한
+  id-token: write
 
 jobs:
   build:
@@ -36,7 +36,7 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v1
       with:
-        path: docs/build/html  # Sphinx 빌드 결과 디렉터리
+        path: docs/build/html  # 빌드된 Sphinx 문서 디렉터리
 
   deploy:
     needs: build
