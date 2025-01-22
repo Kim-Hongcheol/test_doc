@@ -1,2 +1,2 @@
-  - name: Create .nojekyll
-    run: echo > docs/build/html/.nojekyll
+- name: Create .nojekyll
+  run: echo > docs/build/html/.nojekyll
