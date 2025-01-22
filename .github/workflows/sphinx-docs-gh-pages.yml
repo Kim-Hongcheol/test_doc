@@ -1,4 +1,4 @@
-name: Build and Deploy Sphinx Docs (Clean Links, Check Size)
+name: Build and Deploy Sphinx Docs (No Symlinks/Hardlinks, Check Size)
 
 on:
   push:
@@ -16,8 +16,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1) 저장소 체크아웃 & Python
-      - name: Checkout
+      # -------------------------
+      # 1) Checkout Repository & Set Up Python
+      # -------------------------
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Set up Python
@@ -30,58 +32,60 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r docs/requirements.txt
 
-      # 2) Sphinx 빌드
-      - name: Build Sphinx docs
-        run: sphinx-build -b html docs/source docs/build/html
-
-      # 3) 링크 제거 (cp -rL) + 압축/해제
-      - name: Remove links & re-archive
+      # -------------------------
+      # 2) Build Sphinx Documentation
+      # -------------------------
+      - name: Build Sphinx documentation
         run: |
-          echo "[INFO] Removing symlinks/hardlinks with cp -rL..."
+          sphinx-build -b html docs/source docs/build/html
+
+      # -------------------------
+      # 3) Remove Symlinks/Hardlinks
+      # -------------------------
+      - name: Remove symlinks and hard links
+        run: |
+          echo "[INFO] Removing symlinks and hard links..."
           mkdir -p docs/build/final
           cp -rL docs/build/html/* docs/build/final
+          rm -rf docs/build/html
+          mv docs/build/final docs/build/html
+          echo "[INFO] Link removal done."
 
-          echo "[INFO] Archiving final directory..."
-          cd docs/build
-          tar -cf final.tar final
-
-          echo "[INFO] Remove old dirs..."
-          rm -rf html final
-
-          echo "[INFO] Extracting tar to a fresh html dir..."
-          mkdir html
-          tar -xf final.tar -C html --strip-components=1
-
-          echo "[INFO] Done. Listing final output..."
-          find html -ls
-          du -sh html
-
-      # 4) 디버그
-      - name: Debug structure
+      # -------------------------
+      # 4) Debug: Verify No Links and Check Size
+      # -------------------------
+      - name: Debug file structure
         run: |
-          echo "=== Check for symlinks ==="
+          echo "=== Check for symlinks (should be none) ==="
           find docs/build/html -type l -exec ls -la {} \; || true
 
-          echo "=== Check inodes ==="
-          ls -aliR docs/build/html | sort | uniq -c | sort -nr | head -30
+          echo "=== Check for repeated inodes (possible hard links) ==="
+          find docs/build/html -type f -printf '%i %p\n' | sort | uniq -c | awk '$1 > 1 {print $2}'
 
-          echo "=== Check size ==="
+          echo "=== Check total size of docs/build/html ==="
           du -sh docs/build/html
 
-      # (선택) Jekyll 무시파일
+      # (Optional) Create .nojekyll File: Prevent GitHub Pages from Ignoring Directories Starting with '_'
       - name: Create .nojekyll
         run: echo > docs/build/html/.nojekyll
 
-      # 5) 아티팩트 업로드
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
+      # -------------------------
+      # 5) Upload Artifact
+      # -------------------------
+      - name: Upload artifact (github-pages)
+        uses: actions/upload-artifact@v4
         with:
-          name: github-pages
+          name: github-pages   # actions/deploy-pages@v4 will look for this artifact
           path: docs/build/html
 
+  # -------------------------
+  # Deploy Job
+  # -------------------------
   deploy:
     needs: build
     runs-on: ubuntu-latest
+
     steps:
       - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v3
+        uses: actions/deploy-pages@v4
+        # No additional input needed; will automatically detect and deploy the "github-pages" artifact
