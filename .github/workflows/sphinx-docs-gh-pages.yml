@@ -1,4 +1,4 @@
-name: Build and Deploy Docs
+name: Build and Deploy Sphinx Docs
 
 on:
   push:
@@ -12,16 +12,20 @@ permissions:
   id-token: write
 
 jobs:
+  # -------------------------------
+  # 1) 빌드 Job
+  # -------------------------------
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: "3.10"
 
       - name: Install dependencies
         run: |
@@ -32,20 +36,29 @@ jobs:
         run: |
           sphinx-build -b html docs/source docs/build/html
 
-      - name: Check build outputs
-        run: ls -R docs/build/html  # 디버깅용
+      # 디버그: 빌드 결과 확인
+      - name: Debug Sphinx outputs
+        run: |
+          echo "===== Sphinx build output ====="
+          ls -R docs/build/html
+          echo "================================"
 
-      # 1) 여기서 아티팩트 업로드 (필수)
+      # (1) 아티팩트 업로드 (필수)
       - name: Upload artifact for Pages
         uses: actions/upload-pages-artifact@v1
         with:
           path: docs/build/html
+          # 여기서 path 경로가 빌드 결과물과 일치해야 함.
+          # 업로드된 아티팩트의 기본 이름은 "github-pages"로 설정됨
 
+  # -------------------------------
+  # 2) 배포 Job
+  # -------------------------------
   deploy:
-    # 2) 배포 Job은 build Job이 끝나야 실행됨
-    needs: build
+    needs: build          # build Job이 끝난 뒤 실행
     runs-on: ubuntu-latest
+
     steps:
-      # 3) 업로드된 아티팩트를 가져와서 Pages에 배포
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
+        # 별도의 인자 없이, build Job에서 업로드된 "github-pages" 아티팩트를 자동 조회
